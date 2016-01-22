@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+       default-autowire="byName">
+
+    <bean id="processWorker" class="stock.web.scheduler.ProcessWorker">
+    </bean>
+
+    <bean id="collectorConfig" class="stock.web.scheduler.WorkerConfig">
+        <property name="mainProcessor">
+            <bean class="stock.web.stock.data.processor.CollectDataProcessor"/>
+        </property>
+    </bean>
+    <bean id="nearestPeakForcastConfig" class="stock.web.scheduler.WorkerConfig">
+        <property name="fileName">
+            <value>距10.01最高点峰值10%内涨停排序预测</value>
+        </property>
+        <property name="mainProcessor">
+            <bean class="stock.web.stock.data.processor.NearestPeakProcessor"/>
+        </property>
+        <property name="followedDataProcessors">
+            <list>
+                <bean class="stock.web.stock.data.processor.HighestPriceProcessor">
+                    <property name="titleName" value="6月份"/>
+                    <property name="startDate" value="2015-06-01"/>
+                    <property name="endDate" value="2015-06-30"/>
+                </bean>
+                <bean class="stock.web.stock.data.processor.HighestPriceProcessor">
+                    <property name="titleName" value="7月7日后"/>
+                    <property name="startDate" value="2015-07-07"/>
+                </bean>
+                <bean class="stock.web.stock.data.processor.HighestPriceProcessor">
+                    <property name="titleName" value="10月01日后"/>
+                    <property name="startDate" value="2015-10-01"/>
+                </bean>
+                <bean class="stock.web.stock.data.processor.RecentRaiseUpProcessor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="oversoldRallyForcastConfig" class="stock.web.scheduler.WorkerConfig">
+        <property name="fileName">
+            <value>10.01最高点跌幅超过25%按跌幅排序预测</value>
+        </property>
+        <property name="mainProcessor">
+            <bean class="stock.web.stock.data.processor.OversoldRallyProcessor"/>
+        </property>
+        <property name="followedDataProcessors">
+            <list>
+                <bean class="stock.web.stock.data.processor.HighestPriceProcessor">
+                    <property name="titleName" value="6月份"/>
+                    <property name="startDate" value="2015-06-01"/>
+                    <property name="endDate" value="2015-06-30"/>
+                </bean>
+                <bean class="stock.web.stock.data.processor.HighestPriceProcessor">
+                    <property name="titleName" value="7月7日后"/>
+                    <property name="startDate" value="2015-07-07"/>
+                </bean>
+                <bean class="stock.web.stock.data.processor.HighestPriceProcessor">
+                    <property name="titleName" value="10月01日后"/>
+                    <property name="startDate" value="2015-10-01"/>
+                </bean>
+                <bean class="stock.web.stock.data.processor.RecentRaiseUpProcessor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="nearestPeakEvaluateConfig" class="stock.web.scheduler.WorkerConfig">
+        <property name="fileName">
+            <value>距10.01最高点峰值10%内涨停排序评估</value>
+        </property>
+        <property name="mainProcessor">
+            <bean class="stock.web.stock.data.processor.NearestPeakProcessor"/>
+        </property>
+        <property name="followedDataProcessors">
+            <list>
+                <bean class="stock.web.stock.data.processor.HighestPriceProcessor">
+                    <property name="titleName" value="6月份"/>
+                    <property name="startDate" value="2015-06-01"/>
+                    <property name="endDate" value="2015-06-30"/>
+                </bean>
+                <bean class="stock.web.stock.data.processor.HighestPriceProcessor">
+                    <property name="titleName" value="7月7日后"/>
+                    <property name="startDate" value="2015-07-07"/>
+                </bean>
+                <bean class="stock.web.stock.data.processor.HighestPriceProcessor">
+                    <property name="titleName" value="10月01日后"/>
+                    <property name="startDate" value="2015-10-01"/>
+                </bean>
+                <bean class="stock.web.stock.data.processor.RecentRaiseUpProcessor"/>
+                <bean class="stock.web.stock.data.processor.RasingRateProcessor">
+                    <property name="titleName" value="当日"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="processQueue" class="stock.web.scheduler.ProcessQueue"/>
+</beans>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <resultMap id="RM-STOCK-DAILY-DATA" class="stock.common.dal.dataobject.DailyTradeData">
+        <result property="stockDailyId" column="stock_daily_id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="stockCode" column="stock_code" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="currentDate" column="trading_date" javaType="java.util.Date" jdbcType="date"/>
+        <result property="openingPrice" column="opening_price" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="closingPrice" column="closing_price" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="highestPrice" column="highest_price" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="lowestPrice" column="lowest_price" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="tradingVolume" column="trading_volume" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="tradingAmount" column="trading_amount" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="stockName" column="stock_name" javaType="java.lang.String" jdbcType="varchar"/>
+    </resultMap>
+
+    <sql id="StockDailyData.baseColumn">
+        stock_daily_id, stock_code, trading_date, opening_price, closing_price,
+        highest_price, lowest_price, gmt_create, gmt_modified, trading_volume, trading_amount, stock_name
+    </sql>
+    <insert id="MS-DAILY-TRADE-DATA-INSERT">
+        insert into stock_daily_data (
+        <include refid="StockDailyData.baseColumn"/>
+        ) values (#stockDailyId#, #stockCode#, #currentDate#, #openingPrice#, #closingPrice#, #highestPrice#,
+        #lowestPrice#, now(), now(), #tradingVolume#, #tradingAmount#, #stockName#);
+    </insert>
+
+    <select id="MS-SELECT-STOCK-CODE" resultClass="java.lang.String">
+        select distinct(stock_code) from stock_daily_data;
+    </select>
+
+    <select id="MS-SELECT-BY-INTERVAL-TRADING-DATE" resultMap="RM-STOCK-DAILY-DATA">
+        select
+        <include refid="StockDailyData.baseColumn"/>
+        <![CDATA[
+        from stock_daily_data
+        where trading_date >= #startDate# and trading_date <= #endDate# and stock_code = #stockCode# order by
+        trading_date asc;
+        ]]>
+    </select>
+
+    <select id="MS-SELECT-BY-LATEST-TRADING-DATE" resultMap="RM-STOCK-DAILY-DATA">
+        select
+        <include refid="StockDailyData.baseColumn"/>
+        from stock_daily_data
+        where trading_date >= #date# and stock_code = #stockCode# order by trading_date asc;
+    </select>
+
+    <select id="MS-SELECT-PREV-K-TRADING-DATE" resultMap="RM-STOCK-DAILY-DATA">
+        select
+        <include refid="StockDailyData.baseColumn"/>
+        <![CDATA[
+        from stock_daily_data
+        where trading_date <= #date# and stock_code = #stockCode# order by trading_date desc limit #k#;
+        ]]>
+    </select>
+
+    <update id="MS-UPDATE-DAILY-TRADING-DATA">
+        <![CDATA[
+        update stock_daily_data set stock_name = #stockName# where stock_code = #stockCode#;
+        ]]>
+    </update>
+</sqlMap>

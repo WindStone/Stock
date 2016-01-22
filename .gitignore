@@ -1,0 +1,6 @@
+.idea/
+out/
+*.class
+*.iml
+*.zip
+*.tar.gz
