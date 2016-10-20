@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <resultMap id="RM-RECORD-RELATION" class="stock.common.dal.dataobject.RecordRelation">
+        <result property="recordRelationId" column="record_relation_id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="recordRelationType" column="record_relation_type" javaType="java.lang.String"
+                jdbcType="varchar"/>
+        <result property="recordFromId" column="record_from_id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="recordToId" column="record_to_id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="datetime"/>
+        <result property="gmtModified" column="gmt_modified" javaType="java.util.Date" jdbcType="datetime"/>
+    </resultMap>
+
+    <sql id="RecordRelation.baseColumn">
+        record_relation_id, record_relation_type, record_from_id, record_to_id, gmt_create, gmt_modified
+    </sql>
+
+    <select id="MS-TRADE-DETAIL-RECORD-QUERY-BY-FROM-ID" resultMap="RM-RECORD-RELATION">
+        select
+        <include refid="RecordRelation.baseColumn"/>
+        from record_relation
+        where record_relation_type = #recordType# and record_from_id = #recordFromId#
+    </select>
+
+</sqlMap>

@@ -11,6 +11,14 @@
               maxSessions="10"
               maxTransactions="5"
               useStatementNamespaces="false"/>
+
     <sqlMap resource="sqlmap/StockDailyData.xml"/>
+    <sqlMap resource="sqlmap/StockMinuteData.xml"/>
+    <sqlMap resource="sqlmap/PlateDailyData.xml"/>
     <sqlMap resource="sqlmap/TableSequence.xml"/>
+    <sqlMap resource="sqlmap/WorkHolidayConfig.xml"/>
+    <sqlMap resource="sqlmap/TradeRecord.xml"/>
+    <sqlMap resource="sqlmap/Report.xml"/>
+    <sqlMap resource="sqlmap/User.xml"/>
+
 </sqlMapConfig>

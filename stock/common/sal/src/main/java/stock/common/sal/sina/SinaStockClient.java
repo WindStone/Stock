@@ -4,6 +4,8 @@
  */
 package stock.common.sal.sina;
 
+import java.util.Date;
+
 import stock.common.sal.model.CurrentTradeData;
 
 /**
@@ -12,4 +14,6 @@ import stock.common.sal.model.CurrentTradeData;
  */
 public interface SinaStockClient {
     CurrentTradeData getStock(String stockCode);
+
+    double getWarrantFactor(String stockCode, Date date);
 }

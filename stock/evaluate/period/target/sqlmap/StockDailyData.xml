@@ -13,13 +13,21 @@
         <result property="lowestPrice" column="lowest_price" javaType="java.lang.Double" jdbcType="decimal"/>
         <result property="tradingVolume" column="trading_volume" javaType="java.lang.Double" jdbcType="decimal"/>
         <result property="tradingAmount" column="trading_amount" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="stockName" column="stock_name" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="warrantFactor" column="warrant_factor" javaType="java.lang.Double" jdbcType="decimal"
+                nullValue="0"/>
     </resultMap>
+
+    <sql id="StockDailyData.baseColumn">
+        stock_daily_id, stock_code, trading_date, opening_price, closing_price,
+        highest_price, lowest_price, gmt_create, gmt_modified, trading_volume, trading_amount, stock_name,
+        warrant_factor
+    </sql>
     <insert id="MS-DAILY-TRADE-DATA-INSERT">
-        insert into stock_daily_data (stock_daily_id, stock_code, trading_date, opening_price, closing_price,
-        highest_price, lowest_price, gmt_create, gmt_modified, trading_volume, trading_amount)
-        values
-        (#stockDailyId#, #stockCode#, #currentDate#, #openingPrice#, #closingPrice#, #highestPrice#, #lowestPrice#,
-        now(), now(), #tradingVolume#, #tradingAmount#);
+        insert into stock_daily_data (
+        <include refid="StockDailyData.baseColumn"/>
+        ) values (#stockDailyId#, #stockCode#, #currentDate#, #openingPrice#, #closingPrice#, #highestPrice#,
+        #lowestPrice#, now(), now(), #tradingVolume#, #tradingAmount#, #stockName#, #warrantFactor#);
     </insert>
 
     <select id="MS-SELECT-STOCK-CODE" resultClass="java.lang.String">
@@ -27,35 +35,49 @@
     </select>
 
     <select id="MS-SELECT-BY-INTERVAL-TRADING-DATE" resultMap="RM-STOCK-DAILY-DATA">
+        select
+        <include refid="StockDailyData.baseColumn"/>
         <![CDATA[
-        select stock_daily_id, stock_code, trading_date, opening_price, closing_price, highest_price, lowest_price,
-        gmt_create, gmt_modified, trading_volume, trading_amount
         from stock_daily_data
-        where trading_date >= #startDate# and trading_date <= #endDate# and stock_code = #stockCode# order by trading_date asc;
+        where trading_date >= #startDate# and trading_date <= #endDate# and stock_code = #stockCode# order by
+        trading_date asc;
         ]]>
     </select>
 
     <select id="MS-SELECT-BY-LATEST-TRADING-DATE" resultMap="RM-STOCK-DAILY-DATA">
-        <![CDATA[
-        select stock_daily_id, stock_code, trading_date, opening_price, closing_price, highest_price, lowest_price,
-        gmt_create, gmt_modified, trading_volume, trading_amount
+        select
+        <include refid="StockDailyData.baseColumn"/>
         from stock_daily_data
         where trading_date >= #date# and stock_code = #stockCode# order by trading_date asc;
-        ]]>
     </select>
 
     <select id="MS-SELECT-PREV-K-TRADING-DATE" resultMap="RM-STOCK-DAILY-DATA">
+        select
+        <include refid="StockDailyData.baseColumn"/>
         <![CDATA[
-        select stock_daily_id, stock_code, trading_date, opening_price, closing_price, highest_price, lowest_price,
-        gmt_create, gmt_modified, trading_volume, trading_amount
         from stock_daily_data
         where trading_date <= #date# and stock_code = #stockCode# order by trading_date desc limit #k#;
         ]]>
     </select>
 
-    <select id="MS-UPDATE-DAILY-TRADING-DATA">
+    <select id="MS-SELECT-BY-STOCK-CODE-AND-DATE" resultMap="RM-STOCK-DAILY-DATA">
+        select
+        <include refid="StockDailyData.baseColumn"/>
         <![CDATA[
-        update stock_daily_data set stock_name = #stockName# where stock_code = #stockCode#;
+        from stock_daily_data
+        where trading_date = #date# and stock_code = #stockCode#;
         ]]>
     </select>
+
+    <update id="MS-UPDATE-DAILY-TRADING-DATA">
+        <![CDATA[
+        update stock_daily_data
+            set stock_code=#stockCode#, trading_date=#currentDate#, opening_price=#openingPrice#,
+                closing_price=#closingPrice#, highest_price=#highestPrice#, lowest_price=#lowestPrice#,
+                gmt_modified=now(), trading_volume=#tradingVolume#, trading_amount=#tradingAmount#,
+                stock_name=#stockName#, warrant_factor=#warrantFactor#
+            where stock_daily_id = #stockDailyId#;
+        ]]>
+    </update>
+
 </sqlMap>

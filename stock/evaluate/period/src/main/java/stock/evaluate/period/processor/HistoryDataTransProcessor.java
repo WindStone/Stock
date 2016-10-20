@@ -4,22 +4,30 @@
  */
 package stock.evaluate.period.processor;
 
+import java.io.File;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.dao.DuplicateKeyException;
+
 import stock.common.dal.datainterface.DailyTradeDAO;
 import stock.common.dal.datainterface.HistoryDataAccessor;
+import stock.common.dal.datainterface.MinuteTradeDAO;
 import stock.common.dal.datainterface.SequenceGenerator;
 import stock.common.dal.dataobject.DailyTradeData;
+import stock.common.dal.dataobject.MinuteTradeData;
 import stock.common.dal.enums.SequenceEnum;
 import stock.common.dal.jxl.HistoryDataAccessorImpl;
+import stock.common.sal.sina.SinaStockClient;
+import stock.common.sal.sina.SinaStockClientImpl;
 import stock.common.util.DateUtil;
 import stock.common.util.PathUtil;
 
-import java.io.File;
-import java.util.List;
+import com.google.common.collect.Maps;
 
 /**
  * @author yuanren.syr
@@ -34,62 +42,60 @@ public class HistoryDataTransProcessor {
         XmlBeanFactory xmlBeanFactory = new XmlBeanFactory(new FileSystemResource(
             PathUtil.getDalPath() + "/src/main/resource/META-INF/spring/common-dal.xml"));
         DailyTradeDAO dailyTradeDAO = (DailyTradeDAO) xmlBeanFactory.getBean("dailyTradeDAO");
+        MinuteTradeDAO minuteTradeDAO = (MinuteTradeDAO) xmlBeanFactory.getBean("minuteTradeDAO");
         SequenceGenerator sequenceGenerator = (SequenceGenerator) xmlBeanFactory
             .getBean("sequenceGenerator");
 
-        File file = new File(PathUtil.getDataPath() + "/daily/" + "/201512");
+        SinaStockClient sinaStockClient = new SinaStockClientImpl();
+
+        File file = new File(PathUtil.getDataPath() + "/5min/" + "/201501-09");
         File[] files = file.listFiles();
         for (File f : files) {
+            String fileName = StringUtils.substringAfterLast(f.getAbsolutePath(), File.separator);
+            String stockCode = StringUtils.removeEnd(fileName, ".csv");
+            if (!StringUtils.startsWith(stockCode, "SZ00")
+                && !StringUtils.startsWith(stockCode, "SH60")
+                && !StringUtils.startsWith(stockCode, "SZ300")) {
+                continue;
+            }
+            if (stockCode.compareTo("SZ300319") < 0) {
+                continue;
+            }
             List<DailyTradeData> dtds = historyDataAccessor.getDailyTradeData(f);
             double openingPrice = 0, closingPrice = 0;
             double highestPrice = 0, lowestPrice = 0;
-
-            String dateString = null;
+            Map<Date, Double> factors = Maps.newHashMap();
+            String stockName = null;
             for (DailyTradeData dtd : dtds) {
-                dtd.setStockDailyId(sequenceGenerator.getSequence(SequenceEnum.STOCK_DAILY_SEQ));
+                if (factors.get(dtd.getCurrentDate()) == null) {
+                    DailyTradeData factor = dailyTradeDAO.queryByStockCodeAndDate(
+                        dtd.getStockCode(), dtd.getCurrentDate());
+                    stockName = factor.getStockName();
+                    stockCode = factor.getStockCode();
+                    factors.put(factor.getCurrentDate(), factor.getWarrantFactor());
+                }
+                MinuteTradeData mtd = new MinuteTradeData();
+                mtd.setStockMinuteId(sequenceGenerator.getSequence(SequenceEnum.STOCK_MINUTE_SEQ));
+                mtd.setStockCode(dtd.getStockCode());
+                mtd.setStockName(stockName);
+                mtd.setSampleTime(DateUtil.parseDate(dtd.getDate() + " " + dtd.getTime()));
+                mtd.setSampleInterval(5);
+                mtd.setOpeningPrice(dtd.getOpeningPrice(null));
+                mtd.setHighestPrice(dtd.getHighestPrice(null));
+                mtd.setClosingPrice(dtd.getClosingPrice(null));
+                mtd.setLowestPrice(dtd.getLowestPrice(null));
+                mtd.setTradingVolume(dtd.getTradingVolume());
+                mtd.setTradingAmount(dtd.getTradingAmount());
+                mtd.setWarrantFactor(factors.get(dtd.getCurrentDate()));
+
                 try {
-                    dailyTradeDAO.insert(dtd);
+                    minuteTradeDAO.insert(mtd);
+                } catch (DuplicateKeyException e) {
                 } catch (Exception e) {
-                    System.out.println(openingPrice + " " + closingPrice + " " + highestPrice + " "
-                                       + lowestPrice);
-                    System.out.println(e);
+                    e.printStackTrace();
                 }
             }
-            //            for (DailyTradeData dtd : dtds) {
-            //                if (highestPrice == 0) {
-            //                    highestPrice = dtd.getHighestPrice();
-            //                    lowestPrice = dtd.getLowestPrice();
-            //                }
-            //                if (StringUtils.equals(dtd.getTime(), "09:35")) {
-            //                    openingPrice = dtd.getOpeningPrice();
-            //                    dateString = dtd.getDate();
-            //                }
-            //                highestPrice = Math.max(highestPrice, dtd.getHighestPrice());
-            //                lowestPrice = Math.min(lowestPrice, dtd.getLowestPrice());
-            //                if (StringUtils.equals(dtd.getTime(), "15:00")
-            //                    && StringUtils.equals(dateString, dtd.getDate())) {
-            //                    closingPrice = dtd.getClosingPrice();
-            //                    DailyTradeData dailyTradeData = new DailyTradeData();
-            //                    dailyTradeData.setStockCode(dtds.get(0).getStockCode());
-            //                    dailyTradeData.setCurrentDate(DateUtil.parseSlashDate(dateString));
-            //                    dailyTradeData.setOpeningPrice(openingPrice);
-            //                    dailyTradeData.setClosingPrice(closingPrice);
-            //                    dailyTradeData.setHighestPrice(highestPrice);
-            //                    dailyTradeData.setLowestPrice(lowestPrice);
-            //                    dailyTradeData.setStockDailyId(sequenceGenerator
-            //                        .getSequence(SequenceEnum.STOCK_DAILY_SEQ));
-            //                    try {
-            //                        dailyTradeDAO.insert(dailyTradeData);
-            //                    } catch (Exception e) {
-            //                        System.out.println(openingPrice + " " + closingPrice + " " + highestPrice
-            //                                           + " " + lowestPrice);
-            //                        System.out.println(e);
-            //                    }
-            //                    dateString = null;
-            //                    highestPrice = 0;
-            //                    lowestPrice = 0;
-            //                }
-            //            }
+            System.out.println(stockCode + " Done!");
         }
     }
 }

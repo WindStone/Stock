@@ -14,21 +14,29 @@
         <result property="tradingVolume" column="trading_volume" javaType="java.lang.Double" jdbcType="decimal"/>
         <result property="tradingAmount" column="trading_amount" javaType="java.lang.Double" jdbcType="decimal"/>
         <result property="stockName" column="stock_name" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="warrantFactor" column="warrant_factor" javaType="java.lang.Double" jdbcType="decimal"
+                nullValue="0"/>
+    </resultMap>
+
+    <resultMap id="MAP-CODE-NAME" class="java.util.HashMap">
+        <result property="code" column="stock_code" javaType="java.lang.String"/>
+        <result property="name" column="stock_name" javaType="java.lang.String"/>
     </resultMap>
 
     <sql id="StockDailyData.baseColumn">
         stock_daily_id, stock_code, trading_date, opening_price, closing_price,
-        highest_price, lowest_price, gmt_create, gmt_modified, trading_volume, trading_amount, stock_name
+        highest_price, lowest_price, gmt_create, gmt_modified, trading_volume, trading_amount, stock_name,
+        warrant_factor
     </sql>
     <insert id="MS-DAILY-TRADE-DATA-INSERT">
         insert into stock_daily_data (
         <include refid="StockDailyData.baseColumn"/>
         ) values (#stockDailyId#, #stockCode#, #currentDate#, #openingPrice#, #closingPrice#, #highestPrice#,
-        #lowestPrice#, now(), now(), #tradingVolume#, #tradingAmount#, #stockName#);
+        #lowestPrice#, now(), now(), #tradingVolume#, #tradingAmount#, #stockName#, #warrantFactor#);
     </insert>
 
-    <select id="MS-SELECT-STOCK-CODE" resultClass="java.lang.String">
-        select distinct(stock_code) from stock_daily_data;
+    <select id="MS-SELECT-STOCK-CODE" resultMap="MAP-CODE-NAME">
+        select distinct(stock_code), stock_name from stock_daily_data;
     </select>
 
     <select id="MS-SELECT-BY-INTERVAL-TRADING-DATE" resultMap="RM-STOCK-DAILY-DATA">
@@ -57,9 +65,24 @@
         ]]>
     </select>
 
+    <select id="MS-SELECT-BY-STOCK-CODE-AND-DATE" resultMap="RM-STOCK-DAILY-DATA">
+        select
+        <include refid="StockDailyData.baseColumn"/>
+        <![CDATA[
+        from stock_daily_data
+        where trading_date = #date# and stock_code = #stockCode#;
+        ]]>
+    </select>
+
     <update id="MS-UPDATE-DAILY-TRADING-DATA">
         <![CDATA[
-        update stock_daily_data set stock_name = #stockName# where stock_code = #stockCode#;
+        update stock_daily_data
+            set stock_code=#stockCode#, trading_date=#currentDate#, opening_price=#openingPrice#,
+                closing_price=#closingPrice#, highest_price=#highestPrice#, lowest_price=#lowestPrice#,
+                gmt_modified=now(), trading_volume=#tradingVolume#, trading_amount=#tradingAmount#,
+                stock_name=#stockName#, warrant_factor=#warrantFactor#
+            where stock_daily_id = #stockDailyId#;
         ]]>
     </update>
+
 </sqlMap>

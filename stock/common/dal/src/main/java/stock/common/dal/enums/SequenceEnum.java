@@ -9,7 +9,13 @@ package stock.common.dal.enums;
  * @version $Id: SequenceEnum.java, v 0.1 2015/12/6 16:48 yuanren.syr Exp $
  */
 public enum SequenceEnum {
-    STOCK_DAILY_SEQ("stock_daily_id", "", 16);
+    STOCK_DAILY_SEQ("stock_daily_id", "", 16),
+
+    STOCK_PLATE_SEQ("stock_plate_id", "", 16),
+
+    STOCK_MINUTE_SEQ("stock_minute_id", "", 16),
+
+    REPORT_SEQ("report_id", "", 16);
 
     private String name;
 

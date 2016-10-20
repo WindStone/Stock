@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <resultMap id="RM-WORK-HOLIDAY-CONFIG" class="stock.common.dal.dataobject.WorkHolidayConfig">
+        <result property="day" column="day" javaType="java.util.Date" jdbcType="date"/>
+        <result property="holiday" column="is_holiday" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="datetime"/>
+        <result property="gmtModified" column="gmt_modified" javaType="java.util.Date" jdbcType="datetime"/>
+    </resultMap>
+
+    <sql id="WorkHolidayConfig.baseColumn">
+        day, is_holiday, gmt_create, gmt_modified
+    </sql>
+
+    <select id="WORK-HOLIDAY-CONFIG-QUERY" resultMap="RM-WORK-HOLIDAY-CONFIG">
+        select
+        <include refid="WorkHolidayConfig.baseColumn"/>
+        from work_holiday_config;
+    </select>
+
+</sqlMap>

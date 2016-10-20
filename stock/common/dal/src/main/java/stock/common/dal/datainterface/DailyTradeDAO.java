@@ -4,7 +4,9 @@
  */
 package stock.common.dal.datainterface;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import stock.common.dal.dataobject.DailyTradeData;
 
@@ -18,6 +20,8 @@ public interface DailyTradeDAO {
 
     List<String> queryForStockCodes();
 
+    Map<String, String> queryForStockCodesAndNames();
+
     List<DailyTradeData> queryByIntervalTradingData(String stockCode, String startDate,
                                                     String endDate);
 
@@ -25,5 +29,7 @@ public interface DailyTradeDAO {
 
     List<DailyTradeData> queryByPrevKTradingData(String stockCode, String date, int k);
 
-    void updateDailyTradingData(String stockCode, String stockName);
+    DailyTradeData queryByStockCodeAndDate(String stockCode, Date date);
+
+    int updateDailyTradingData(DailyTradeData dailyTradeData);
 }

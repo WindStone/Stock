@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <resultMap id="RM-USER" class="stock.common.dal.dataobject.User">
+        <result property="id" column="id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="username" column="username" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="realname" column="realname" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="password" column="password" javaType="java.lang.String" jdbcType="varchar"/>
+    </resultMap>
+
+    <sql id="User.baseColumn">
+        id, username, realname, password
+    </sql>
+
+    <select id="MS-USER-QUERY-ALL" resultMap="RM-USER">
+        select
+        <include refid="User.baseColumn"/>
+        from users
+    </select>
+
+</sqlMap>

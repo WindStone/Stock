@@ -51,8 +51,8 @@ public class OversoldRallyForecastProcessor {
                 int highestIndex = -1;
                 for (int i = 0; i < dailyTradeDatas.size(); ++i) {
                     DailyTradeData dailyTradeData = dailyTradeDatas.get(i);
-                    if (dailyTradeData.getHighestPrice() > highest) {
-                        highest = dailyTradeData.getHighestPrice();
+                    if (dailyTradeData.getHighestPrice(null) > highest) {
+                        highest = dailyTradeData.getHighestPrice(null);
                         highestDate = dailyTradeData.getCurrentDate();
                         highestIndex = i;
                     }
@@ -105,8 +105,8 @@ public class OversoldRallyForecastProcessor {
             for (int i = 0; i < dailyTradeDatas.size() - 1; ++i) {
                 DailyTradeData dailyTradeData = dailyTradeDatas.get(i);
                 DailyTradeData nextTradeData = dailyTradeDatas.get(i + 1);
-                double closingPrice = dailyTradeData.getClosingPrice();
-                double nextClosingPrice = nextTradeData.getClosingPrice();
+                double closingPrice = dailyTradeData.getClosingPrice(null);
+                double nextClosingPrice = nextTradeData.getClosingPrice(null);
                 if (((nextClosingPrice - closingPrice) / closingPrice) > 0.098) {
                     result.add(nextTradeData.getCurrentDate());
                 }

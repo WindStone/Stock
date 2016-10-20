@@ -29,13 +29,13 @@ public class BollServiceImpl extends BaseServiceImpl implements BollService {
         double sum = 0;
         double avg = 0;
         for (DailyTradeData dailyTradeData : dailyTradeDatas) {
-            sum += dailyTradeData.getClosingPrice();
+            sum += dailyTradeData.getClosingPrice(null);
         }
         avg = sum / n;
 
         sum = 0;
         for (DailyTradeData dailyTradeData : dailyTradeDatas) {
-            double diff = dailyTradeData.getClosingPrice() - avg;
+            double diff = dailyTradeData.getClosingPrice(null) - avg;
             sum += diff * diff;
         }
         bollValueTuple.setAvgPrice(avg);

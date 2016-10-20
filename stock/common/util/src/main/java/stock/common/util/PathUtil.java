@@ -4,6 +4,8 @@
  */
 package stock.common.util;
 
+import java.io.File;
+
 /**
  *
  * @author yuanren.syr
@@ -26,4 +28,14 @@ public class PathUtil {
     public static String getDataPath() {
         return System.getProperty("user.dir") + RESOURCE + DATA;
     }
+
+    public static String getExcelPath() {
+        return System.getProperty("user.home") + File.separatorChar + "resources"
+               + File.separatorChar;
+    }
+
+    public static String getUserPath() {
+        return System.getProperty("user.home");
+    }
+
 }

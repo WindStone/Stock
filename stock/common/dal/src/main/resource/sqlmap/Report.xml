@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <resultMap id="RM-REPORT" class="stock.common.dal.dataobject.Report">
+        <result property="id" column="id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="username" column="username" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="date" column="date" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="content" column="content" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="datetime"/>
+        <result property="gmtModified" column="gmt_modified" javaType="java.util.Date" jdbcType="datetime"/>
+    </resultMap>
+
+    <sql id="Report.baseColumn">
+        id, username, date, content, gmt_create, gmt_modified
+    </sql>
+
+    <insert id="MS-REPORT-INSERT">
+        insert into reports (
+        <include refid="Report.baseColumn"/>
+        ) values(#id#, #username#, #date#, #content#, now(), now())
+    </insert>
+
+    <update id="MS-REPORT-UPDATE-BY-ID">
+        update reports set content = #content#, gmt_modified = now() where id = #id#
+    </update>
+
+    <select id="MS-REPORT-QUERY-BY-USERNAME-AND-DATE" resultMap="RM-REPORT">
+        select
+        <include refid="Report.baseColumn"/>
+        from reports
+        where username = #username# and date = #date#
+    </select>
+
+    <select id="MS-REPORT-QUERY-ALL" resultMap="RM-REPORT">
+        select
+        <include refid="Report.baseColumn"/>
+        from reports
+        <isNotEmpty property="limitStart">
+            <isNotEmpty property="limitEnd">
+                limit #limitStart#, #limitEnd#
+            </isNotEmpty>
+        </isNotEmpty>
+        order by date;
+    </select>
+
+</sqlMap>

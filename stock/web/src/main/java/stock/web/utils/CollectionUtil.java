@@ -6,6 +6,7 @@ package stock.web.utils;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.util.CollectionUtils;
 
@@ -25,5 +26,25 @@ public class CollectionUtil {
             ret = iter.next();
         }
         return ret;
+    }
+
+    public static <T> T fetchDefault(T[] list, int index, T defaultValue) {
+        if (list == null) {
+            return defaultValue;
+        }
+        if (index < 0 || index >= list.length) {
+            return defaultValue;
+        }
+        return list[index];
+    }
+
+    public static <T> T fetchDefault(List<T> list, int index, T defaultValue) {
+        if (list == null) {
+            return defaultValue;
+        }
+        if (index < 0 || index >= list.size()) {
+            return defaultValue;
+        }
+        return list.get(index);
     }
 }

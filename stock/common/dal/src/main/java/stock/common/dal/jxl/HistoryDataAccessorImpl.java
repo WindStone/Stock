@@ -95,14 +95,23 @@ public class HistoryDataAccessorImpl implements HistoryDataAccessor {
                 String[] cells = csvReader.getValues();
                 DailyTradeData dtd = new DailyTradeData();
                 String fileName = StringUtils.substringAfterLast(f.getAbsolutePath(),
-                        File.separator);
+                    File.separator);
                 dtd.setStockCode(StringUtils.removeEnd(fileName, ".csv"));
+                //                dtd.setStockCode("SH000001");
                 dtd.setCurrentDate(DateUtil.parseSlashDate(cells[0]));
                 dtd.setDate(cells[0]);
-                dtd.setOpeningPrice(Double.parseDouble(cells[1]));
-                dtd.setHighestPrice(Double.parseDouble(cells[2]));
-                dtd.setLowestPrice(Double.parseDouble(cells[3]));
-                dtd.setClosingPrice(Double.parseDouble(cells[4]));
+                dtd.setTime(cells[1]);
+
+                dtd.setOpeningPrice(Double.parseDouble(cells[2]));
+                dtd.setHighestPrice(Double.parseDouble(cells[3]));
+                dtd.setLowestPrice(Double.parseDouble(cells[4]));
+                dtd.setClosingPrice(Double.parseDouble(cells[5]));
+                dtd.setTradingVolume(Double.parseDouble(cells[6]));
+                try {
+                    dtd.setTradingAmount(Double.parseDouble(cells[7]));
+                } catch (NumberFormatException e) {
+                    dtd.setTradingAmount(-1);
+                }
                 dtds.add(dtd);
             }
         } catch (Exception e) {

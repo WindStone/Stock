@@ -15,6 +15,8 @@ import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.CollectionUtils;
 
+import com.google.common.collect.Lists;
+
 import stock.common.dal.datainterface.DailyTradeDAO;
 import stock.common.dal.dataobject.DailyTradeData;
 import stock.common.sal.model.CurrentTradeData;
@@ -23,8 +25,6 @@ import stock.common.sal.sina.SinaStockClientImpl;
 import stock.common.util.DateUtil;
 import stock.common.util.PathUtil;
 import stock.core.model.models.StockCodeNearestPeakGroup;
-
-import com.google.common.collect.Lists;
 
 /**
  * @author yuanren.syr
@@ -51,8 +51,8 @@ public class OversoldRallyEvaluteProcessor {
                 int highestIndex = -1;
                 for (int i = 0; i < dailyTradeDatas.size(); ++i) {
                     DailyTradeData dailyTradeData = dailyTradeDatas.get(i);
-                    if (dailyTradeData.getHighestPrice() > highest) {
-                        highest = dailyTradeData.getHighestPrice();
+                    if (dailyTradeData.getHighestPrice(null) > highest) {
+                        highest = dailyTradeData.getHighestPrice(null);
                         highestDate = dailyTradeData.getCurrentDate();
                         highestIndex = i;
                     }
@@ -76,9 +76,10 @@ public class OversoldRallyEvaluteProcessor {
                 }
 
                 if (!CollectionUtils.isEmpty(dailyTradeDatas)
-                    && prevDtd.getClosingPrice() <= 0.75 * highest) {
+                    && prevDtd.getClosingPrice(null) <= 0.75 * highest) {
                     stockCodes.add(new StockCodeNearestPeakGroup(stockCode, ctd.getStockName(),
-                        highest, highestDate, prevDtd.getClosingPrice(), curDtd.getClosingPrice()));
+                        highest, highestDate, prevDtd.getClosingPrice(null), curDtd
+                            .getClosingPrice(null)));
                 }
             }
         }
@@ -120,8 +121,8 @@ public class OversoldRallyEvaluteProcessor {
             for (int i = 0; i < dailyTradeDatas.size() - 1; ++i) {
                 DailyTradeData dailyTradeData = dailyTradeDatas.get(i);
                 DailyTradeData nextTradeData = dailyTradeDatas.get(i + 1);
-                double closingPrice = dailyTradeData.getClosingPrice();
-                double nextClosingPrice = nextTradeData.getClosingPrice();
+                double closingPrice = dailyTradeData.getClosingPrice(null);
+                double nextClosingPrice = nextTradeData.getClosingPrice(null);
                 if (((nextClosingPrice - closingPrice) / closingPrice) > 0.098) {
                     result.add(nextTradeData.getCurrentDate());
                 }

@@ -8,7 +8,7 @@ package stock.core.model.models;
  * @author yuanren.syr
  * @version $Id: MACDValueTuple.java, v 0.1 2016/1/4 23:13 yuanren.syr Exp $
  */
-public class MACDValueTuple {
+public class MACDValueTuple extends SerializableModel {
 
     private double EMA1;
 
@@ -18,6 +18,7 @@ public class MACDValueTuple {
 
     private double DEA;
 
+    /** Display as M */
     private double MACD;
 
     public double getEMA1() {

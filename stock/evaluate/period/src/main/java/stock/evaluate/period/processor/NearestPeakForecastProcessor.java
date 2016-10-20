@@ -14,6 +14,8 @@ import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.CollectionUtils;
 
+import com.google.common.collect.Lists;
+
 import stock.common.dal.datainterface.DailyTradeDAO;
 import stock.common.dal.dataobject.DailyTradeData;
 import stock.common.sal.model.CurrentTradeData;
@@ -24,8 +26,6 @@ import stock.common.util.DecimalUtil;
 import stock.common.util.PathUtil;
 import stock.core.model.models.BollValueTuple;
 import stock.core.model.models.StockCodeNearestPeakGroup;
-
-import com.google.common.collect.Lists;
 
 /**
  * @author yuanren.syr
@@ -53,8 +53,8 @@ public class NearestPeakForecastProcessor {
                 double highest = 0;
                 Date highestDate = null;
                 for (DailyTradeData dailyTradeData : dailyTradeDatas) {
-                    if (dailyTradeData.getHighestPrice() > highest) {
-                        highest = dailyTradeData.getHighestPrice();
+                    if (dailyTradeData.getHighestPrice(null) > highest) {
+                        highest = dailyTradeData.getHighestPrice(null);
                         highestDate = dailyTradeData.getCurrentDate();
                     }
                 }
@@ -85,8 +85,8 @@ public class NearestPeakForecastProcessor {
             double highestPrice0707 = 0;
             Date highestDate0707 = null;
             for (DailyTradeData dailyTradeData : dailyTradeDatas) {
-                if (highestPrice0707 < dailyTradeData.getHighestPrice()) {
-                    highestPrice0707 = dailyTradeData.getHighestPrice();
+                if (highestPrice0707 < dailyTradeData.getHighestPrice(null)) {
+                    highestPrice0707 = dailyTradeData.getHighestPrice(null);
                     highestDate0707 = dailyTradeData.getCurrentDate();
                 }
             }
@@ -95,8 +95,8 @@ public class NearestPeakForecastProcessor {
             double highestPrice06 = 0;
             Date highestDate06 = null;
             for (DailyTradeData dailyTradeData : dailyTradeDatas2) {
-                if (highestPrice06 < dailyTradeData.getHighestPrice()) {
-                    highestPrice06 = dailyTradeData.getHighestPrice();
+                if (highestPrice06 < dailyTradeData.getHighestPrice(null)) {
+                    highestPrice06 = dailyTradeData.getHighestPrice(null);
                     highestDate06 = dailyTradeData.getCurrentDate();
                 }
             }
@@ -141,8 +141,8 @@ public class NearestPeakForecastProcessor {
             for (int i = 0; i < dailyTradeDatas.size() - 1; ++i) {
                 DailyTradeData dailyTradeData = dailyTradeDatas.get(i);
                 DailyTradeData nextTradeData = dailyTradeDatas.get(i + 1);
-                double closingPrice = dailyTradeData.getClosingPrice();
-                double nextClosingPrice = nextTradeData.getClosingPrice();
+                double closingPrice = dailyTradeData.getClosingPrice(null);
+                double nextClosingPrice = nextTradeData.getClosingPrice(null);
                 if (((nextClosingPrice - closingPrice) / closingPrice) > 0.098) {
                     result.add(nextTradeData.getCurrentDate());
                 }
@@ -174,13 +174,13 @@ public class NearestPeakForecastProcessor {
         int N = end - start;
         double avg = 0;
         for (int i = start; i < end; ++i) {
-            sum += dtds.get(i).getClosingPrice();
+            sum += dtds.get(i).getClosingPrice(null);
         }
         avg = sum / N;
 
         sum = 0;
         for (int i = start; i < end; ++i) {
-            double diff = dtds.get(i).getClosingPrice() - avg;
+            double diff = dtds.get(i).getClosingPrice(null) - avg;
             sum += diff * diff;
         }
         bollValueTuple.setAvgPrice(avg);

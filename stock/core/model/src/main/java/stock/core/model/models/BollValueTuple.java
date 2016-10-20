@@ -9,7 +9,7 @@ package stock.core.model.models;
  * @author yuanren.syr
  * @version $Id: BollValueTuple.java, v 0.1 2015/12/17 23:38 yuanren.syr Exp $
  */
-public class BollValueTuple {
+public class BollValueTuple extends SerializableModel {
     private double avgPrice;
 
     private double standardDeviation;
@@ -19,6 +19,10 @@ public class BollValueTuple {
     private double upPrice;
 
     private double downPrice;
+
+    private double openingPrice;
+
+    private double closingPrice;
 
     public double getAvgPrice() {
         return avgPrice;
@@ -58,5 +62,21 @@ public class BollValueTuple {
 
     public void setDownPrice(double downPrice) {
         this.downPrice = downPrice;
+    }
+
+    public double getOpeningPrice() {
+        return openingPrice;
+    }
+
+    public void setOpeningPrice(double openingPrice) {
+        this.openingPrice = openingPrice;
+    }
+
+    public double getClosingPrice() {
+        return closingPrice;
+    }
+
+    public void setClosingPrice(double closingPrice) {
+        this.closingPrice = closingPrice;
     }
 }

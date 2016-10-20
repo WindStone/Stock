@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <resultMap id="RM-DOC-RECORD" class="stock.common.dal.dataobject.DocRecord">
+        <result property="docRecordId" column="doc_record_id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="docTitle" column="doc_title" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="docTemplate" column="doc_template" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="datetime"/>
+        <result property="gmtModified" column="gmt_modified" javaType="java.util.Date" jdbcType="datetime"/>
+    </resultMap>
+
+    <sql id="DocRecord.baseColumn">
+        doc_record_id, doc_title, doc_template, gmt_create, gmt_modified
+    </sql>
+
+    <select id="MS-TRADE-DETAIL-RECORD-QUERY-ALL" resultMap="RM-DOC-RECORD">
+        select
+        <include refid="DocRecord.baseColumn"/>
+        from doc_record
+    </select>
+
+    <select id="MS-TRADE-DETAIL-RECORD-QUERY-BY-ID" resultMap="RM-DOC-RECORD">
+        select
+        <include refid="DocRecord.baseColumn"/>
+        from doc_record
+        where doc_record_id = #value#
+    </select>
+
+</sqlMap>

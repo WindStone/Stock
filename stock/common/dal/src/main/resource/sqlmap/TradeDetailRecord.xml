@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <resultMap id="RM-TRADE-DETAIL-RECORD" class="stock.common.dal.dataobject.TradeDetailRecord">
+        <result property="tradeDetailRecordId" column="trade_detail_record_id" javaType="java.lang.String"
+                jdbcType="varchar"/>
+        <result property="tradeRecordId" column="trade_record_id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="tradeFlow" column="trade_flow" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="tradeTime" column="trade_time" javaType="java.util.Date" jdbcType="timestamp"/>
+        <result property="price" column="price" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="conclusion" column="conclusion" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="datetime"/>
+        <result property="gmtModified" column="gmt_modified" javaType="java.util.Date" jdbcType="datetime"/>
+    </resultMap>
+
+    <sql id="TradeDetailRecord.baseColumn">
+        trade_detail_record_id, trade_record_id, trade_flow, trade_time, price, conclusion, gmt_create, gmt_modified
+    </sql>
+
+    <select id="MS-TRADE-DETAIL-RECORD-QUERY-BY-INTERVAL" resultMap="RM-TRADE-DETAIL-RECORD">
+        select
+        <include refid="TradeDetailRecord.baseColumn"/>
+        from trade_detail_record
+        <isNotNull property="startDate">
+            <isNull property="endDate">
+                where trade_time >= #startDate#
+            </isNull>
+        </isNotNull>
+        <isNull property="startDate">
+            <isNotNull property="endDate">
+                <![CDATA[
+                    where trade_time <= #endDate#
+                ]]>
+            </isNotNull>
+        </isNull>
+        <isNotNull property="startDate">
+            <isNotNull property="endDate">
+                <![CDATA[
+                    where trade_time >= #startDate# and trade_time <= #endDate#
+                ]]>
+            </isNotNull>
+        </isNotNull>
+        order by trade_time asc
+    </select>
+
+    <select id="MS-TRADE-DETAIL-RECORD-QUERY-BY-TRADE-ID" resultMap="RM-TRADE-DETAIL-RECORD">
+        select
+        <include refid="TradeDetailRecord.baseColumn"/>
+        from trade_detail_record
+        where trade_record_id = #value#
+    </select>
+
+</sqlMap>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <resultMap id="RM-STOCK-MINUTE" class="stock.common.dal.dataobject.MinuteTradeData">
+        <result property="stockMinuteId" column="stock_minute_id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="stockCode" column="stock_code" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="stockName" column="stock_name" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="sampleTime" column="sample_time" javaType="java.util.Date" jdbcType="datetime"/>
+        <result property="sampleInterval" column="sample_interval" javaType="java.lang.Integer" jdbcType="int"/>
+
+        <result property="openingPrice" column="opening_price" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="closingPrice" column="closing_price" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="highestPrice" column="highest_price" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="lowestPrice" column="lowest_price" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="tradingVolume" column="trading_volume" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="tradingAmount" column="trading_amount" javaType="java.lang.Double" jdbcType="decimal"/>
+        <result property="warrantFactor" column="warrant_factor" javaType="java.lang.Double" jdbcType="decimal"/>
+
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="datetime"/>
+        <result property="gmtModified" column="gmt_modified" javaType="java.util.Date" jdbcType="datetime"/>
+    </resultMap>
+
+    <sql id="RecordRelation.baseColumn">
+        stock_minute_id, stock_code, stock_name, sample_time, sample_interval, opening_price, closing_price,
+        highest_price, lowest_price, trading_volume, trading_amount, warrant_factor, gmt_create, gmt_modified
+    </sql>
+
+    <insert id="MS-STOCK-MINUTE-INSERT">
+        insert into stock_minute_data (
+        <include refid="RecordRelation.baseColumn"/>
+        ) values (#stockMinuteId#, #stockCode#, #stockName#, #sampleTime#, #sampleInterval#, #openingPrice#,
+        #closingPrice#, #highestPrice#, #lowestPrice#, #tradingVolume#, #tradingAmount#, #warrantFactor#, now(), now())
+    </insert>
+
+</sqlMap>

@@ -4,18 +4,15 @@
  */
 package stock.evaluate.period.processor;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.CollectionUtils;
+
+import com.google.common.collect.Lists;
 
 import stock.common.dal.datainterface.DailyTradeDAO;
 import stock.common.dal.dataobject.DailyTradeData;
@@ -27,8 +24,6 @@ import stock.common.util.DecimalUtil;
 import stock.common.util.PathUtil;
 import stock.core.model.models.BollValueTuple;
 import stock.core.model.models.StockCodeNearestPeakGroup;
-
-import com.google.common.collect.Lists;
 
 /**
  * @author yuanren.syr
@@ -74,14 +69,14 @@ public class NearestPeakEvaluateProcessor {
                         break;
                     } else if (DateUtil.getDiffInDays(dailyTradeData.getCurrentDate(), prevDate) == 0) {
                         curDailyTradeDate = dailyTradeData;
-                        if (dailyTradeData.getHighestPrice() > highest) {
-                            highest = dailyTradeData.getHighestPrice();
+                        if (dailyTradeData.getHighestPrice(null) > highest) {
+                            highest = dailyTradeData.getHighestPrice(null);
                             highestDate = dailyTradeData.getCurrentDate();
                         }
                         break;
                     }
-                    if (dailyTradeData.getHighestPrice() > highest) {
-                        highest = dailyTradeData.getHighestPrice();
+                    if (dailyTradeData.getHighestPrice(null) > highest) {
+                        highest = dailyTradeData.getHighestPrice(null);
                         highestDate = dailyTradeData.getCurrentDate();
                     }
                 }
@@ -97,10 +92,10 @@ public class NearestPeakEvaluateProcessor {
                 }
 
                 if (!CollectionUtils.isEmpty(dailyTradeDatas)
-                    && curDailyTradeDate.getClosingPrice() >= 0.9 * highest) {
+                    && curDailyTradeDate.getClosingPrice(null) >= 0.9 * highest) {
                     StockCodeNearestPeakGroup group = new StockCodeNearestPeakGroup(stockCode,
                         ctd.getStockName(), highest, highestDate,
-                        curDailyTradeDate.getClosingPrice());
+                        curDailyTradeDate.getClosingPrice(null));
                     group.setCurDailyTradeDate(curDailyTradeDate);
                     stockCodes.add(group);
                 }
@@ -114,8 +109,8 @@ public class NearestPeakEvaluateProcessor {
             double highestPrice0707 = 0;
             Date highestDate0707 = null;
             for (DailyTradeData dailyTradeData : dailyTradeDatas) {
-                if (highestPrice0707 < dailyTradeData.getHighestPrice()) {
-                    highestPrice0707 = dailyTradeData.getHighestPrice();
+                if (highestPrice0707 < dailyTradeData.getHighestPrice(null)) {
+                    highestPrice0707 = dailyTradeData.getHighestPrice(null);
                     highestDate0707 = dailyTradeData.getCurrentDate();
                 }
             }
@@ -124,8 +119,8 @@ public class NearestPeakEvaluateProcessor {
             double highestPrice06 = 0;
             Date highestDate06 = null;
             for (DailyTradeData dailyTradeData : dailyTradeDatas2) {
-                if (highestPrice06 < dailyTradeData.getHighestPrice()) {
-                    highestPrice06 = dailyTradeData.getHighestPrice();
+                if (highestPrice06 < dailyTradeData.getHighestPrice(null)) {
+                    highestPrice06 = dailyTradeData.getHighestPrice(null);
                     highestDate06 = dailyTradeData.getCurrentDate();
                 }
             }
@@ -152,8 +147,8 @@ public class NearestPeakEvaluateProcessor {
                 .simpleFormat(group.getDates().get(group.getDates().size() - 1)));
             List<DailyTradeData> nextDailyTradeDatas = dailyTradeDAO.queryByPrevKTradingData(
                 group.getStockCode(), DateUtil.simpleFormat(endDate), 2);
-            double rasingRate = (nextDailyTradeDatas.get(0).getClosingPrice() - nextDailyTradeDatas
-                .get(1).getClosingPrice()) / nextDailyTradeDatas.get(1).getClosingPrice();
+            double rasingRate = (nextDailyTradeDatas.get(0).getClosingPrice(null) - nextDailyTradeDatas
+                .get(1).getClosingPrice(null)) / nextDailyTradeDatas.get(1).getClosingPrice(null);
             if (rasingRate > 0.098) {
                 System.out.println("," + DecimalUtil.formatPercent(rasingRate) + ",*");
             } else {
@@ -178,8 +173,8 @@ public class NearestPeakEvaluateProcessor {
                 }
                 DailyTradeData dailyTradeData = dailyTradeDatas.get(i);
                 DailyTradeData nextTradeData = dailyTradeDatas.get(i + 1);
-                double closingPrice = dailyTradeData.getClosingPrice();
-                double nextClosingPrice = nextTradeData.getClosingPrice();
+                double closingPrice = dailyTradeData.getClosingPrice(null);
+                double nextClosingPrice = nextTradeData.getClosingPrice(null);
                 if (((nextClosingPrice - closingPrice) / closingPrice) > 0.098) {
                     result.add(nextTradeData.getCurrentDate());
                 }
@@ -211,13 +206,13 @@ public class NearestPeakEvaluateProcessor {
         int N = end - start;
         double avg = 0;
         for (int i = start; i < end; ++i) {
-            sum += dtds.get(i).getClosingPrice();
+            sum += dtds.get(i).getClosingPrice(null);
         }
         avg = sum / N;
 
         sum = 0;
         for (int i = start; i < end; ++i) {
-            double diff = dtds.get(i).getClosingPrice() - avg;
+            double diff = dtds.get(i).getClosingPrice(null) - avg;
             sum += diff * diff;
         }
         bollValueTuple.setAvgPrice(avg);

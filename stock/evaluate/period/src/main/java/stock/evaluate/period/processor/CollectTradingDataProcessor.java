@@ -51,11 +51,11 @@ public class CollectTradingDataProcessor {
                 //                dailyTradeData.setTradingAmount(ctd.getTradingAmount());
                 //                dailyTradeData.setStockDailyId(sequenceGenerator
                 //                    .getSequence(SequenceEnum.STOCK_DAILY_SEQ));
-                try {
-                    dailyTradeDAO.updateDailyTradingData(stockCode, ctd.getStockName());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                //                try {
+                //                    dailyTradeDAO.updateDailyTradingData(stockCode, ctd.getStockName());
+                //                } catch (Exception e) {
+                //                    e.printStackTrace();
+                //                }
             }
         }
     }

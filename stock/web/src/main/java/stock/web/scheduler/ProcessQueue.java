@@ -8,6 +8,8 @@ import java.util.AbstractQueue;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import stock.common.util.LoggerUtil;
+
 /**
  * @author yuanren.syr
  * @version $Id: ProcessQueue.java, v 0.1 2016/1/18 23:21 yuanren.syr Exp $
@@ -47,7 +49,11 @@ public class ProcessQueue extends AbstractQueue<ProcessWorker> {
     }
 
     public ProcessWorker peek() {
-        return null;
+        if (currentWorker == null) {
+            return null;
+        } else {
+            return currentWorker;
+        }
     }
 
     public static void pollToWork() {
@@ -63,7 +69,11 @@ public class ProcessQueue extends AbstractQueue<ProcessWorker> {
             }
             new Thread() {
                 public void run() {
-                    currentWorker.work();
+                    try {
+                        currentWorker.work();
+                    } catch (Throwable t) {
+                        LoggerUtil.error("Process Queue System Error", t);
+                    }
                 }
             }.start();
         }

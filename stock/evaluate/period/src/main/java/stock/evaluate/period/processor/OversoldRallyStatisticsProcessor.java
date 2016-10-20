@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
 
+import com.google.common.collect.Lists;
+
 import stock.common.dal.datainterface.DailyTradeDAO;
 import stock.common.dal.dataobject.DailyTradeData;
 import stock.common.sal.model.CurrentTradeData;
@@ -20,8 +22,6 @@ import stock.common.sal.sina.SinaStockClientImpl;
 import stock.common.util.DateUtil;
 import stock.common.util.PathUtil;
 import stock.core.model.models.StockCodeNearestPeakGroup;
-
-import com.google.common.collect.Lists;
 
 /**
  * @author yuanren.syr
@@ -48,8 +48,8 @@ public class OversoldRallyStatisticsProcessor {
                 int highestIndex = -1;
                 for (int i = 0; i < dailyTradeDatas.size(); ++i) {
                     DailyTradeData dailyTradeData = dailyTradeDatas.get(i);
-                    if (dailyTradeData.getHighestPrice() > highest) {
-                        highest = dailyTradeData.getHighestPrice();
+                    if (dailyTradeData.getHighestPrice(null) > highest) {
+                        highest = dailyTradeData.getHighestPrice(null);
                         highestDate = dailyTradeData.getCurrentDate();
                         highestIndex = i;
                     }
@@ -66,7 +66,7 @@ public class OversoldRallyStatisticsProcessor {
                 if (highestIndex != -1) {
                     for (int i = highestIndex + 1; i < dailyTradeDatas.size(); ++i) {
                         DailyTradeData dailyTradeData = dailyTradeDatas.get(i);
-                        if (dailyTradeData.getClosingPrice() <= 0.75 * highest) {
+                        if (dailyTradeData.getClosingPrice(null) <= 0.75 * highest) {
                             System.out.println(stockCode
                                                + " "
                                                + ctd.getStockName()
@@ -77,26 +77,26 @@ public class OversoldRallyStatisticsProcessor {
                                                + " "
                                                + DateUtil.simpleFormat(dailyTradeData
                                                    .getCurrentDate()) + " "
-                                               + dailyTradeData.getClosingPrice());
+                                               + dailyTradeData.getClosingPrice(null));
                             System.out.print("后续7个交易日: ");
                             for (int j = i; j < i + 7 && j < dailyTradeDatas.size(); ++j) {
                                 DailyTradeData nextDtd = dailyTradeDatas.get(j);
                                 System.out.print(DateUtil.simpleFormat(nextDtd.getCurrentDate())
-                                                 + " " + nextDtd.getClosingPrice() + " ");
+                                                 + " " + nextDtd.getClosingPrice(null) + " ");
                             }
                             System.out.println();
                             for (int j = i + 1; j < dailyTradeDatas.size(); ++j) {
                                 DailyTradeData prevDtd = dailyTradeDatas.get(j - 1);
                                 DailyTradeData curDtd = dailyTradeDatas.get(j);
 
-                                if (curDtd.getClosingPrice() > prevDtd.getClosingPrice()) {
-                                    double raisingRate = (curDtd.getClosingPrice() - prevDtd
-                                        .getClosingPrice()) / prevDtd.getClosingPrice();
+                                if (curDtd.getClosingPrice(null) > prevDtd.getClosingPrice(null)) {
+                                    double raisingRate = (curDtd.getClosingPrice(null) - prevDtd
+                                        .getClosingPrice(null)) / prevDtd.getClosingPrice(null);
                                     System.out.println("回升点: "
                                                        + DateUtil.simpleFormat(curDtd
                                                            .getCurrentDate())
                                                        + " "
-                                                       + curDtd.getClosingPrice()
+                                                       + curDtd.getClosingPrice(null)
                                                        + " "
                                                        + new DecimalFormat("#0.00%")
                                                            .format(raisingRate));
@@ -107,14 +107,14 @@ public class OversoldRallyStatisticsProcessor {
                             for (int j = i + 1; j < dailyTradeDatas.size(); ++j) {
                                 DailyTradeData prevDtd = dailyTradeDatas.get(j - 1);
                                 DailyTradeData curDtd = dailyTradeDatas.get(j);
-                                double raisingRate = (curDtd.getClosingPrice() - prevDtd
-                                    .getClosingPrice()) / prevDtd.getClosingPrice();
+                                double raisingRate = (curDtd.getClosingPrice(null) - prevDtd
+                                    .getClosingPrice(null)) / prevDtd.getClosingPrice(null);
                                 if (raisingRate >= 0.07) {
                                     System.out.println("反弹点: "
                                                        + DateUtil.simpleFormat(curDtd
                                                            .getCurrentDate())
                                                        + " "
-                                                       + curDtd.getClosingPrice()
+                                                       + curDtd.getClosingPrice(null)
                                                        + " "
                                                        + new DecimalFormat("#0.00%")
                                                            .format(raisingRate)
@@ -122,12 +122,12 @@ public class OversoldRallyStatisticsProcessor {
                                                        + DateUtil.getDiffInDays(
                                                            curDtd.getCurrentDate(),
                                                            dailyTradeData.getCurrentDate()));
-                                    double toHighestRate = prevDtd.getClosingPrice() / highest;
+                                    double toHighestRate = prevDtd.getClosingPrice(null) / highest;
                                     System.out.println("反弹点前一天: "
                                                        + DateUtil.simpleFormat(prevDtd
                                                            .getCurrentDate())
                                                        + " "
-                                                       + prevDtd.getClosingPrice()
+                                                       + prevDtd.getClosingPrice(null)
                                                        + " "
                                                        + new DecimalFormat("#0.00%")
                                                            .format(toHighestRate));

@@ -7,6 +7,7 @@ package stock.web.utils;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.util.CollectionUtils;
 
 import stock.common.dal.datainterface.DailyTradeDAO;
@@ -33,8 +34,9 @@ public class RasingRateUtils {
         if (prevDailyTradeData == null || curDailyTradeData == null) {
             return null;
         }
-        return (curDailyTradeData.getClosingPrice() - prevDailyTradeData.getClosingPrice())
-               / prevDailyTradeData.getClosingPrice();
+        return (curDailyTradeData.getClosingPrice(curDailyTradeData) - prevDailyTradeData
+            .getClosingPrice(curDailyTradeData))
+               / prevDailyTradeData.getClosingPrice(curDailyTradeData);
     }
 
     public static String getRasingRateStr(DailyTradeData prevDailyTradeData,
@@ -49,23 +51,28 @@ public class RasingRateUtils {
     public static double getRasingRate(String stockCode, Date date) {
         List<DailyTradeData> dtds = dailyTradeDAO.queryByPrevKTradingData(stockCode,
             DateUtil.simpleFormat(date), 2);
+        if (!DateUtils.isSameDay(dtds.get(0).getCurrentDate(), date)) {
+            return 0;
+        }
         if (CollectionUtils.isEmpty(dtds) || dtds.size() != 2) {
             return 0;
         }
-        return (dtds.get(0).getClosingPrice() - dtds.get(1).getClosingPrice())
-               / dtds.get(1).getClosingPrice();
+        return (dtds.get(0).getClosingPrice(dtds.get(0)) - dtds.get(1).getClosingPrice(dtds.get(0)))
+               / dtds.get(1).getClosingPrice(dtds.get(0));
     }
 
     public static List<DailyTradeData> getLimitUpTradeDatas(String stockCode) {
         List<DailyTradeData> dailyTradeDatas = dailyTradeDAO.queryByLatestTradingData(stockCode,
             "2015-01-01");
+        DailyTradeData maxWarrant = CollectionUtil.fetchLastElement(dailyTradeDatas);
         if (CollectionUtils.isEmpty(dailyTradeDatas)) {
             return null;
         }
         List<DailyTradeData> dtds = Lists.newArrayList();
         for (int i = 0; i < dailyTradeDatas.size() - 1; ++i) {
-            double rasingRate = (dailyTradeDatas.get(i + 1).getClosingPrice() - dailyTradeDatas
-                .get(i).getClosingPrice()) / dailyTradeDatas.get(i).getClosingPrice();
+            double rasingRate = (dailyTradeDatas.get(i + 1).getClosingPrice(maxWarrant) - dailyTradeDatas
+                .get(i).getClosingPrice(maxWarrant))
+                                / dailyTradeDatas.get(i).getClosingPrice(maxWarrant);
             if (rasingRate > RASING_RATE_THRESHOLD) {
                 dtds.add(dailyTradeDatas.get(i + 1));
             }

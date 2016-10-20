@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <resultMap id="RM-TRADE-RECORD" class="stock.common.dal.dataobject.TradeDetailRecord">
+        <result property="tradeRecordId" column="trade_record_id" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="operator" column="operator" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="stockCode" column="stock_code" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="stockName" column="stock_name" javaType="java.lang.String" jdbcType="varchar"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="datetime"/>
+        <result property="gmtModified" column="gmt_modified" javaType="java.util.Date" jdbcType="datetime"/>
+    </resultMap>
+
+    <sql id="TradeRecord.baseColumn">
+        rec.trade_record_id, rec.operator, rec.stock_code, rec.stock_name, rec.gmt_create, rec.gmt_modified
+    </sql>
+
+    <select id="MS-TRADE-RECORD-QUERY-BY-DOC-ID" resultMap="RM-TRADE-RECORD">
+        select
+        <include refid="TradeRecord.baseColumn"/>
+        from record_relation rel, trade_record rec
+        where rel.record_to_id = rec.trade_record_id and rel.record_from_id = #docId#
+        <isNotEmpty property="recordRelationType" prepend="and">
+            rel.record_relation_type = #recordRelationType#
+        </isNotEmpty>
+    </select>
+
+</sqlMap>

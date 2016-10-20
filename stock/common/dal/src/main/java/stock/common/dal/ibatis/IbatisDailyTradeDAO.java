@@ -4,15 +4,18 @@
  */
 package stock.common.dal.ibatis;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import stock.common.dal.datainterface.DailyTradeDAO;
 import stock.common.dal.dataobject.DailyTradeData;
-
-import com.google.common.collect.Maps;
+import stock.common.util.DateUtil;
 
 /**
  * @author yuanren.syr
@@ -24,7 +27,14 @@ public class IbatisDailyTradeDAO extends SqlMapClientDaoSupport implements Daily
     }
 
     public List<String> queryForStockCodes() {
-        return getSqlMapClientTemplate().queryForList("MS-SELECT-STOCK-CODE");
+        Map<String, String> dtds = getSqlMapClientTemplate()
+                .queryForMap("MS-SELECT-STOCK-CODE", null, "code", "name");
+        return Lists.newArrayList(dtds.keySet());
+    }
+
+    public Map<String, String> queryForStockCodesAndNames() {
+        return getSqlMapClientTemplate()
+                .queryForMap("MS-SELECT-STOCK-CODE", null, "code", "name");
     }
 
     public List<DailyTradeData> queryByIntervalTradingData(String stockCode, String startDate,
@@ -51,10 +61,15 @@ public class IbatisDailyTradeDAO extends SqlMapClientDaoSupport implements Daily
         return getSqlMapClientTemplate().queryForList("MS-SELECT-PREV-K-TRADING-DATE", map);
     }
 
-    public void updateDailyTradingData(String stockCode, String stockName) {
+    public DailyTradeData queryByStockCodeAndDate(String stockCode, Date date) {
         Map<String, Object> map = Maps.newHashMap();
         map.put("stockCode", stockCode);
-        map.put("stockName", stockName);
-        getSqlMapClientTemplate().update("MS-UPDATE-DAILY-TRADING-DATA", map);
+        map.put("date", DateUtil.simpleFormat(date));
+        return (DailyTradeData) getSqlMapClientTemplate().queryForObject(
+                "MS-SELECT-BY-STOCK-CODE-AND-DATE", map);
+    }
+
+    public int updateDailyTradingData(DailyTradeData dailyTradeData) {
+        return getSqlMapClientTemplate().update("MS-UPDATE-DAILY-TRADING-DATA", dailyTradeData);
     }
 }

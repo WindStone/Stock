@@ -44,7 +44,7 @@ public class FundPowerEvaluateProcessor {
             double closePrice = 0;
             for (DailyTradeData dtd : dtds) {
                 if (StringUtils.equals(dtd.getTime(), "15:00")) {
-                    double curClosePrice = dtd.getClosingPrice();
+                    double curClosePrice = dtd.getClosingPrice(null);
                     if (closePrice != 0 && ((curClosePrice - closePrice) / closePrice) > 0.099) {
                         dates.add(dtd.getCurrentDate());
                     }

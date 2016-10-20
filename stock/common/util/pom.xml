@@ -31,6 +31,10 @@
             <groupId>net.sourceforge.javacsv</groupId>
             <artifactId>javacsv</artifactId>
         </dependency>
+        <dependency>
+            <groupId>apache-log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

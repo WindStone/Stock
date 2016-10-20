@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- 定时任务 start -->
+    <!-- 定义目标bean和bean中的方法 -->
+    <!-- =====================日常任务job========================== -->
+    <bean id="dailyScheduler" class="stock.web.scheduler.DailyScheduler">
+        <property name="nearestPeakForcastConfig" ref="nearestPeakForcastConfig"/>
+        <property name="nearestPeakEvaluateConfig" ref="nearestPeakEvaluateConfig"/>
+        <property name="oversoldRallyForcastConfig" ref="oversoldRallyForcastConfig"/>
+        <property name="oversoldRallyForcastConfigForFeb" ref="oversoldRallyForcastConfigForFeb"/>
+        <property name="bollConfig" ref="bollConfig"/>
+        <property name="bollDiffConfig" ref="bollDiffConfig"/>
+        <property name="dmaConfig" ref="dmaConfig"/>
+        <property name="collectorConfig" ref="collectorConfig"/>
+        <property name="macdConfig" ref="macdConfig"/>
+        <property name="processQueue" ref="processQueue"/>
+        <property name="shExpCollectConfig" ref="shExpCollectConfig"/>
+        <property name="dynamicOverSoldConfig" ref="dynamicOversold"/>
+        <property name="dynamicOverboughtConfig" ref="dynamicOverbought"/>
+    </bean>
+
+    <bean id="dailyTaskQtzJobMethod" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="dailyScheduler"/>
+        </property>
+        <property name="targetMethod">  <!-- 要执行的方法名称 -->
+            <value>execute</value>
+        </property>
+    </bean>
+
+    <!-- ======================== 调度触发器 ======================== -->
+    <bean id="dailyTaskCronTriggerBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail" ref="dailyTaskQtzJobMethod"></property>
+        <!-- 每天下午16:30触发   -->
+        <property name="cronExpression" value="0 30 18 * * ?"></property>
+    </bean>
+
+    <!-- ======================== 调度工厂 ======================== -->
+    <bean id="SpringJobSchedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="dailyTaskCronTriggerBean"/>
+            </list>
+        </property>
+    </bean>
+    <!-- 定时任务 end -->
+
+
+    <bean id="dailyTradeDataCollector" class="stock.web.stock.data.collector.DailyTradeDataCollector">
+        <property name="dailyTradeDAO" ref="dailyTradeDAO"/>
+        <property name="sequenceGenerator" ref="sequenceGenerator"/>
+        <property name="sinaStockClient" ref="sinaStockClient"/>
+    </bean>
+    <bean id="nearestPeakProcessor" class="stock.web.stock.data.processor.stock.NearestPeakProcessor">
+        <property name="dailyTradeDAO" ref="dailyTradeDAO"/>
+        <property name="sinaStockClient" ref="sinaStockClient"/>
+        <property name="fileName" value="距10.01最高点峰值10%内涨停排序"/>
+    </bean>
+    <bean id="oversoldRallyProcessor" class="stock.web.stock.data.processor.stock.OversoldRallyProcessor">
+        <property name="dailyTradeDAO" ref="dailyTradeDAO"/>
+        <property name="sinaStockClient" ref="sinaStockClient"/>
+        <property name="fileName" value="10.01最高点跌幅超过25%按跌幅排序"/>
+    </bean>
+    <bean id="excelExporter" class="stock.web.stock.data.exporter.ExcelExporter"/>
+    <bean id="holidayUtils" class="stock.web.utils.HolidayUtils">
+        <property name="workHolidayDAO" ref="workHolidayDAO"/>
+    </bean>
+
+    <bean id="dailyTradeDAO" class="stock.common.dal.ibatis.IbatisDailyTradeDAO">
+        <property name="sqlMapClient" ref="sqlMapClient"/>
+    </bean>
+    <bean id="plateTradeDAO" class="stock.common.dal.ibatis.IbatisPlateTradeDAO">
+        <property name="sqlMapClient" ref="sqlMapClient"/>
+    </bean>
+    <bean id="workHolidayDAO" class="stock.common.dal.ibatis.IbatisWorkHolidayDAO">
+        <property name="sqlMapClient" ref="sqlMapClient"/>
+    </bean>
+    <bean id="docRecordDAO" class="stock.common.dal.ibatis.IbatisDocRecordDAO">
+        <property name="sqlMapClient" ref="sqlMapClient"/>
+    </bean>
+    <bean id="tradeRecordDAO" class="stock.common.dal.ibatis.IbatisTradeRecordDAO">
+        <property name="sqlMapClient" ref="sqlMapClient"/>
+    </bean>
+    <bean id="tradeDetailRecordDAO" class="stock.common.dal.ibatis.IbatisTradeDetailRecordDAO">
+        <property name="sqlMapClient" ref="sqlMapClient"/>
+    </bean>
+    <bean id="reportDAO" class="stock.common.dal.ibatis.IbatisReportDAO">
+        <property name="sqlMapClient" ref="sqlMapClient"/>
+    </bean>
+    <bean id="userDAO" class="stock.common.dal.ibatis.IbatisUserDAO">
+        <property name="sqlMapClient" ref="sqlMapClient"/>
+    </bean>
+
+
+    <bean id="sinaStockClient" class="stock.common.sal.sina.SinaStockClientImpl"/>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url"
+                  value="jdbc:mysql://localhost:3306/stock_data?useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="Dream612009"/>
+    </bean>
+
+    <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">  <!-- name 为configLocation或s  不可为其他 -->
+            <value>sqlmap/sqlmap.xml</value>
+            <!-- 不区分大小写，路径前可加'/' -->
+        </property>
+
+        <!-- dataSource不是必需 -->
+        <property name="dataSource">
+            <ref local="dataSource"/>
+        </property>
+    </bean>
+
+    <bean id="baseSqlMapClientDAO" abstract="true">
+        <property name="dataSource">
+            <ref local="dataSource"/>
+        </property>
+
+        <!-- sqlMapClient必需 -->
+        <property name="sqlMapClient">
+            <ref local="sqlMapClient"/>
+        </property>
+    </bean>
+
+    <!-- transactionManager不是必需  -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource">
+            <ref local="dataSource"/>
+        </property>
+    </bean>
+
+    <bean id="sequenceGenerator" class="stock.common.dal.ibatis.IbatisSequenceGenerator" parent="baseSqlMapClientDAO"/>
+
+    <bean id="rasingRateUtils" class="stock.web.utils.RasingRateUtils">
+        <property name="dailyTradeDAO" ref="dailyTradeDAO"/>
+    </bean>
+
+    <util:list id="conditionFilters" value-type="stock.web.stock.data.statistics.ConditionFilter">
+        <bean class="stock.web.stock.data.statistics.PriceConditionFilter"/>
+        <bean class="stock.web.stock.data.statistics.VolumeConditionFilter"/>
+    </util:list>
+
+</beans>

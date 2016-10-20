@@ -90,7 +90,7 @@ public class ShenWanPlatePeriodProcessor {
         for (int i = SMOOTH_WINDOW_SIZE - 1; i < dtds.size(); ++i) {
             double sum = 0;
             for (int j = 0; j < SMOOTH_WINDOW_SIZE; ++j) {
-                sum += dtds.get(i - j).getClosingPrice();
+                sum += dtds.get(i - j).getClosingPrice(null);
             }
             smoothClosing.add(sum / SMOOTH_WINDOW_SIZE);
         }

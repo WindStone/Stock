@@ -7,6 +7,10 @@ package stock.common.dal.dataobject;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.BeanUtils;
+
 /**
  *
  * @author yuanren.syr
@@ -45,6 +49,47 @@ public class DailyTradeData implements Serializable {
     /** 换手率 */
     private double            turnoverRate;
 
+    /** 除权因子 */
+    private double            warrantFactor;
+
+    public DailyTradeData() {
+
+    }
+
+    public DailyTradeData(DailyTradeData dtd) {
+        BeanUtils.copyProperties(dtd, this);
+    }
+
+    public double getHighestPrice(DailyTradeData stdTradeData) {
+        if (stdTradeData == null) {
+            return closingPrice;
+        } else {
+            return highestPrice / stdTradeData.getWarrantFactor() * warrantFactor;
+        }
+    }
+
+    public double getOpeningPrice(DailyTradeData stdTradeData) {
+        if (stdTradeData == null) {
+            return openingPrice;
+        } else {
+            return openingPrice / stdTradeData.getWarrantFactor() * warrantFactor;
+        }
+    }
+
+    public double getClosingPrice(DailyTradeData stdTradeData) {
+        if (stdTradeData == null || stdTradeData.getWarrantFactor() == 0) {
+            return closingPrice;
+        } else {
+            double tempClosingPrice = 0;
+            if (currentDate.getYear() + 1900 < 2015) {
+                tempClosingPrice = closingPrice / warrantFactor;
+            } else {
+                tempClosingPrice = closingPrice;
+            }
+            return tempClosingPrice / stdTradeData.getWarrantFactor() * warrantFactor;
+        }
+    }
+
     public String getStockDailyId() {
         return stockDailyId;
     }
@@ -61,32 +106,30 @@ public class DailyTradeData implements Serializable {
         this.currentDate = currentDate;
     }
 
-    public double getOpeningPrice() {
-        return openingPrice;
-    }
-
     public void setOpeningPrice(double openingPrice) {
         this.openingPrice = openingPrice;
-    }
-
-    public double getClosingPrice() {
-        return closingPrice;
     }
 
     public void setClosingPrice(double closingPrice) {
         this.closingPrice = closingPrice;
     }
 
-    public double getHighestPrice() {
-        return highestPrice;
-    }
-
     public void setHighestPrice(double highestPrice) {
         this.highestPrice = highestPrice;
     }
 
-    public double getLowestPrice() {
-        return lowestPrice;
+    public double getLowestPrice(DailyTradeData stdTradeData) {
+        if (stdTradeData == null || stdTradeData.getWarrantFactor() == 0) {
+            return lowestPrice;
+        } else {
+            double tempClosingPrice = 0;
+            if (currentDate.getYear() + 1900 < 2015) {
+                tempClosingPrice = lowestPrice / warrantFactor;
+            } else {
+                tempClosingPrice = lowestPrice;
+            }
+            return tempClosingPrice / stdTradeData.getWarrantFactor() * warrantFactor;
+        }
     }
 
     public void setLowestPrice(double lowestPrice) {
@@ -147,5 +190,33 @@ public class DailyTradeData implements Serializable {
 
     public void setStockName(String stockName) {
         this.stockName = stockName;
+    }
+
+    public double getWarrantFactor() {
+        return warrantFactor;
+    }
+
+    public void setWarrantFactor(double warrantFactor) {
+        this.warrantFactor = warrantFactor;
+    }
+
+    public double getOpeningPrice() {
+        return openingPrice;
+    }
+
+    public double getClosingPrice() {
+        return closingPrice;
+    }
+
+    public double getHighestPrice() {
+        return highestPrice;
+    }
+
+    public double getLowestPrice() {
+        return lowestPrice;
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
     }
 }

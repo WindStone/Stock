@@ -36,7 +36,7 @@ public class MACDServiceImpl extends BaseServiceImpl implements MACDService {
         if (CollectionUtils.isEmpty(curDailyTradeDatas)) {
             return null;
         }
-        double price = curDailyTradeDatas.get(0).getClosingPrice();
+        double price = curDailyTradeDatas.get(0).getClosingPrice(null);
         double ema1Rate = (ema1 - 1) / (ema1 + 1);
 
         int ema1EvaLen = (int) Math.floor(Math.log(0.01 / (price * (1 - ema1Rate)))
@@ -58,9 +58,9 @@ public class MACDServiceImpl extends BaseServiceImpl implements MACDService {
         List<Double> ema2List = Lists.newArrayList(0.0);
         for (DailyTradeData dailyTradeData : dailyTradeDatas) {
             double ema1Value = ema1List.get(ema1List.size() - 1) * ema1Rate
-                               + dailyTradeData.getClosingPrice() * (1 - ema1Rate);
+                               + dailyTradeData.getClosingPrice(null) * (1 - ema1Rate);
             double ema2Value = ema2List.get(ema1List.size() - 1) * ema2Rate
-                               + dailyTradeData.getClosingPrice() * (1 - ema2Rate);
+                               + dailyTradeData.getClosingPrice(null) * (1 - ema2Rate);
             ema1List.add(ema1Value);
             ema2List.add(ema2Value);
         }

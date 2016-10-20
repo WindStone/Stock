@@ -4,48 +4,141 @@
  */
 package stock.web.scheduler;
 
-import stock.web.stock.data.collector.DailyTradeDataCollector;
-import stock.web.stock.data.exporter.Exporter;
-import stock.web.stock.data.processor.NearestPeakProcessor;
-import stock.web.stock.data.processor.OversoldRallyProcessor;
+import java.util.Date;
+import java.util.Map;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Maps;
+
+import stock.common.util.DateUtil;
+import stock.common.util.LoggerUtil;
+import stock.web.config.DailyDataWorkerConfig;
+import stock.web.config.PlateAlgorithmWorkerConfig;
+import stock.web.stock.data.processor.followed.RasingRateProcessor;
 import stock.web.utils.HolidayUtils;
 
 /**
  * @author yuanren.syr
  * @version $Id: DailyScheduler.java, v 0.1 2016/1/7 1:16 yuanren.syr Exp $
  */
-public class DailyScheduler {
+public class DailyScheduler implements InitializingBean {
 
-    private DailyTradeDataCollector dailyTradeDataCollector;
+    private DailyDataWorkerConfig              collectorConfig;
+    private DailyDataWorkerConfig              shExpCollectConfig;
+    private DailyDataWorkerConfig              nearestPeakForcastConfig;
+    private DailyDataWorkerConfig              nearestPeakEvaluateConfig;
+    private DailyDataWorkerConfig              oversoldRallyForcastConfig;
+    private DailyDataWorkerConfig              oversoldRallyForcastConfigForFeb;
+    private DailyDataWorkerConfig              dynamicOverSoldConfig;
+    private DailyDataWorkerConfig              dynamicOverboughtConfig;
+    private PlateAlgorithmWorkerConfig         bollConfig;
+    private PlateAlgorithmWorkerConfig         bollDiffConfig;
+    private PlateAlgorithmWorkerConfig         macdConfig;
+    private PlateAlgorithmWorkerConfig         dmaConfig;
 
-    private NearestPeakProcessor    nearestPeakProcessor;
+    @Autowired
+    private ProcessQueue                       processQueue;
 
-    private OversoldRallyProcessor  oversoldRallyProcessor;
+    private Map<String, DailyDataWorkerConfig> workerConfigMap = Maps.newHashMap();
 
-    private Exporter                excelExporter;
+    @Autowired
+    private HolidayUtils                       holidayUtils;
 
-    private HolidayUtils            holidayUtils;
+    public void execute() {
+        Date forcastDate = HolidayUtils.getLastAvailableDate();
+        if (holidayUtils.isAvailable(forcastDate)) {
+            processQueue.offer(new DailyDataProcessWorker(forcastDate, collectorConfig, null));
+            LoggerUtil.info("Push Collector into the Queue! forcardDate=[{0}]",
+                DateUtil.simpleFormat(forcastDate));
+            processQueue.offer(new DailyDataProcessWorker(forcastDate, nearestPeakForcastConfig,
+                null));
+            processQueue.offer(new DailyDataProcessWorker(forcastDate,
+                oversoldRallyForcastConfigForFeb, null));
+            processQueue
+                .offer(new DailyDataProcessWorker(forcastDate, dynamicOverSoldConfig, null));
+            processQueue.offer(new DailyDataProcessWorker(forcastDate, dynamicOverboughtConfig,
+                null));
 
-    protected void execute() {
+            Date evaluateDate = holidayUtils.getPrevWorkDate(forcastDate);
+
+            Map<String, Object> map = Maps.newHashMap();
+            map.put(RasingRateProcessor.CALC_DAY, forcastDate);
+            processQueue.offer(new DailyDataProcessWorker(evaluateDate, nearestPeakEvaluateConfig,
+                map));
+            processQueue.offer(new DailyDataProcessWorker(forcastDate, shExpCollectConfig, null));
+
+            processQueue.offer(new PlateAlgorithmProcessWorker(forcastDate, bollConfig));
+            processQueue.offer(new PlateAlgorithmProcessWorker(forcastDate, bollDiffConfig));
+            processQueue.offer(new PlateAlgorithmProcessWorker(forcastDate, macdConfig));
+            processQueue.offer(new PlateAlgorithmProcessWorker(forcastDate, dmaConfig));
+        }
     }
 
-    public void setDailyTradeDataCollector(DailyTradeDataCollector dailyTradeDataCollector) {
-        this.dailyTradeDataCollector = dailyTradeDataCollector;
+    public void afterPropertiesSet() throws Exception {
+        workerConfigMap.put(nearestPeakForcastConfig.getFileName(), nearestPeakForcastConfig);
+        workerConfigMap.put(nearestPeakEvaluateConfig.getFileName(), nearestPeakEvaluateConfig);
+        workerConfigMap.put(oversoldRallyForcastConfig.getFileName(), oversoldRallyForcastConfig);
+        workerConfigMap.put(oversoldRallyForcastConfigForFeb.getFileName(),
+            oversoldRallyForcastConfigForFeb);
+        workerConfigMap.put(dynamicOverSoldConfig.getFileName(), dynamicOverSoldConfig);
+        workerConfigMap.put(dynamicOverboughtConfig.getFileName(), dynamicOverboughtConfig);
     }
 
-    public void setNearestPeakProcessor(NearestPeakProcessor nearestPeakProcessor) {
-        this.nearestPeakProcessor = nearestPeakProcessor;
+    public Map<String, DailyDataWorkerConfig> getWorkerConfigMap() {
+        return workerConfigMap;
     }
 
-    public void setOversoldRallyProcessor(OversoldRallyProcessor oversoldRallyProcessor) {
-        this.oversoldRallyProcessor = oversoldRallyProcessor;
+    public void setCollectorConfig(DailyDataWorkerConfig collectorConfig) {
+        this.collectorConfig = collectorConfig;
     }
 
-    public void setExcelExporter(Exporter excelExporter) {
-        this.excelExporter = excelExporter;
+    public void setShExpCollectConfig(DailyDataWorkerConfig shExpCollectConfig) {
+        this.shExpCollectConfig = shExpCollectConfig;
     }
 
-    public void setHolidayUtils(HolidayUtils holidayUtils) {
-        this.holidayUtils = holidayUtils;
+    public void setNearestPeakForcastConfig(DailyDataWorkerConfig nearestPeakForcastConfig) {
+        this.nearestPeakForcastConfig = nearestPeakForcastConfig;
+    }
+
+    public void setNearestPeakEvaluateConfig(DailyDataWorkerConfig nearestPeakEvaluateConfig) {
+        this.nearestPeakEvaluateConfig = nearestPeakEvaluateConfig;
+    }
+
+    public void setOversoldRallyForcastConfig(DailyDataWorkerConfig oversoldRallyForcastConfig) {
+        this.oversoldRallyForcastConfig = oversoldRallyForcastConfig;
+    }
+
+    public void setOversoldRallyForcastConfigForFeb(DailyDataWorkerConfig oversoldRallyForcastConfigForFeb) {
+        this.oversoldRallyForcastConfigForFeb = oversoldRallyForcastConfigForFeb;
+    }
+
+    public void setDynamicOverSoldConfig(DailyDataWorkerConfig dynamicOverSoldConfig) {
+        this.dynamicOverSoldConfig = dynamicOverSoldConfig;
+    }
+
+    public void setDynamicOverboughtConfig(DailyDataWorkerConfig dynamicOverboughtConfig) {
+        this.dynamicOverboughtConfig = dynamicOverboughtConfig;
+    }
+
+    public void setBollConfig(PlateAlgorithmWorkerConfig bollConfig) {
+        this.bollConfig = bollConfig;
+    }
+
+    public void setBollDiffConfig(PlateAlgorithmWorkerConfig bollDiffConfig) {
+        this.bollDiffConfig = bollDiffConfig;
+    }
+
+    public void setMacdConfig(PlateAlgorithmWorkerConfig macdConfig) {
+        this.macdConfig = macdConfig;
+    }
+
+    public void setDmaConfig(PlateAlgorithmWorkerConfig dmaConfig) {
+        this.dmaConfig = dmaConfig;
+    }
+
+    public void setProcessQueue(ProcessQueue processQueue) {
+        this.processQueue = processQueue;
     }
 }

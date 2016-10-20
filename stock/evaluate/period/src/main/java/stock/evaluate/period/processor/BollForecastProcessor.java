@@ -73,10 +73,10 @@ public class BollForecastProcessor {
                 }
                 if (isFirstOpen(bollValueTuples)) {
                     BollValueTuple lastestValueTuple = bollValueTuples.get(0);
-                    double openRate = (prevDtd.getOpeningPrice() - lastestValueTuple.getAvgPrice())
+                    double openRate = (prevDtd.getOpeningPrice(null) - lastestValueTuple.getAvgPrice())
                                       / lastestValueTuple.getAvgPrice();
                     if (openRate < 0.06 && openRate > -0.02
-                        && prevDtd.getClosingPrice() > prevDtd.getOpeningPrice()) {
+                        && prevDtd.getClosingPrice(null) > prevDtd.getOpeningPrice(null)) {
                         double standardRate = bollValueTuples.get(1).getStandardDeviationRate();
                         double bollRaisingRate = (bollValueTuples.get(0).getStandardDeviationRate() - standardRate);
                         double bollFallingRate = (bollValueTuples.get(2).getStandardDeviationRate() - standardRate);
@@ -98,13 +98,13 @@ public class BollForecastProcessor {
         int N = end - start;
         double avg = 0;
         for (int i = start; i < end; ++i) {
-            sum += dtds.get(i).getClosingPrice();
+            sum += dtds.get(i).getClosingPrice(null);
         }
         avg = sum / N;
 
         sum = 0;
         for (int i = start; i < end; ++i) {
-            double diff = dtds.get(i).getClosingPrice() - avg;
+            double diff = dtds.get(i).getClosingPrice(null) - avg;
             sum += diff * diff;
         }
         bollValueTuple.setAvgPrice(avg);

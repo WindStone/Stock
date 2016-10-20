@@ -57,8 +57,8 @@ public class LimitUpCalcProcessor {
                 for (int i = 0; i < dailyTradeDatas.size() - 1; ++i) {
                     DailyTradeData dailyTradeData = dailyTradeDatas.get(i);
                     DailyTradeData nextTradeData = dailyTradeDatas.get(i + 1);
-                    double closingPrice = dailyTradeData.getClosingPrice();
-                    double nextClosingPrice = nextTradeData.getClosingPrice();
+                    double closingPrice = dailyTradeData.getClosingPrice(null);
+                    double nextClosingPrice = nextTradeData.getClosingPrice(null);
                     if (((nextClosingPrice - closingPrice) / closingPrice) > 0.09) {
                         result.add(nextTradeData.getCurrentDate());
                     }

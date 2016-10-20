@@ -5,6 +5,8 @@
 package stock.common.util;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * @author yuanren.syr
@@ -20,7 +22,29 @@ public class DecimalUtil {
         return new DecimalFormat(PERCENT_FORMAT).format(value);
     }
 
+    public static double parsePercent(String value) {
+        try {
+            return (Double) new DecimalFormat(PERCENT_FORMAT).parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public static String formatDecimal(double value) {
         return new DecimalFormat(DECIMAL_FORMAT).format(value);
+    }
+
+    public static double average(List<Double> values) {
+        double result = 0;
+        int len = 0;
+        for (Double value : values) {
+            if (value != null) {
+                result += value;
+                len++;
+            }
+        }
+        result /= values.size();
+        return result;
     }
 }

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+       default-autowire="byName">
+    <!-- BOLL参数 15, 2 -->
+    <bean id="bollService" class="stock.web.service.impl.BollServiceImpl">
+        <property name="algorithmConfig">
+            <bean class="stock.web.config.BollConfig">
+                <property name="n" value="15"/>
+                <property name="k" value="2"/>
+            </bean>
+        </property>
+    </bean>
+    <!-- MACD参数 9, 21, 6 -->
+    <bean id="macdService" class="stock.web.service.impl.MACDServiceImpl">
+        <property name="algorithmConfig">
+            <bean class="stock.web.config.MACDConfig">
+                <property name="ema1" value="9"/>
+                <property name="ema2" value="21"/>
+                <property name="dea" value="6"/>
+                <property name="factor" value="2"/>
+            </bean>
+        </property>
+    </bean>
+    <!-- DMA参数 5, 89, 36 -->
+    <bean id="dmaService" class="stock.web.service.impl.DMAServiceImpl">
+        <property name="algorithmConfig">
+            <bean class="stock.web.config.DMAConfig">
+                <property name="shortAvg" value="5"/>
+                <property name="longAvg" value="89"/>
+                <property name="M" value="36"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="bollPlateProcessor" class="stock.web.stock.data.processor.plate.BollPlateProcessor">
+        <property name="processName" value="BOLL超过中轴百分比"/>
+    </bean>
+    <bean id="bollDiffPlateProcessor" class="stock.web.stock.data.processor.plate.BollDiffPlateProcessor">
+        <property name="processName" value="BOLL距上下轴3%股票数量差值百分比"/>
+    </bean>
+    <bean id="macdPlateProcessor" class="stock.web.stock.data.processor.plate.MACDPlateProcessor">
+        <property name="processName" value="MACD中轴上方百分比"/>
+    </bean>
+    <bean id="dmaPlateProcessor" class="stock.web.stock.data.processor.plate.DMAPlateProcessor">
+        <property name="processName" value="DMA向上百分比"/>
+    </bean>
+
+    <bean id="bollConfig" class="stock.web.config.PlateAlgorithmWorkerConfig">
+        <property name="plateName" value="上证指数"/>
+        <property name="plateProcessor" ref="bollPlateProcessor"/>
+    </bean>
+    <bean id="bollDiffConfig" class="stock.web.config.PlateAlgorithmWorkerConfig">
+        <property name="plateName" value="上证指数"/>
+        <property name="plateProcessor" ref="bollDiffPlateProcessor"/>
+    </bean>
+    <bean id="macdConfig" class="stock.web.config.PlateAlgorithmWorkerConfig">
+        <property name="plateName" value="上证指数"/>
+        <property name="plateProcessor" ref="macdPlateProcessor"/>
+    </bean>
+    <bean id="dmaConfig" class="stock.web.config.PlateAlgorithmWorkerConfig">
+        <property name="plateName" value="上证指数"/>
+        <property name="plateProcessor" ref="dmaPlateProcessor"/>
+    </bean>
+
+    <util:list id="plateProcessors">
+        <ref bean="bollPlateProcessor"/>
+        <ref bean="bollDiffPlateProcessor"/>
+        <ref bean="macdPlateProcessor"/>
+        <ref bean="dmaPlateProcessor"/>
+    </util:list>
+
+</beans>

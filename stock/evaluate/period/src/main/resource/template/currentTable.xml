@@ -1,0 +1,206 @@
+<table>
+    <tr>
+        <th>日期</th>
+        <th>参与者</th>
+        <th>预测股票</th>
+        <th>次日最低点</th>
+        <th>第三日开盘平均值</th>
+        <th>得分</th>
+        <th>累计得分</th>
+    </tr>
+    <tr>
+        <td align="center" rowspan="9">2016-05-09</td>
+        <td align="center" rowspan="3">Roger</td>
+        <td align="center"><b>金禾实业(002597)</b></td>
+        <td align="center">14.38</td>
+        <td align="center">15.39</td>
+        <td align="center">7.02%</td>
+        <td align="center" rowspan="3">10.90%</td>
+    </tr>
+    <tr>
+        <td align="center"><b>搜于特(002503)</b></td>
+        <td align="center">12.92</td>
+        <td align="center">13.16</td>
+        <td align="center">1.86%</td>
+    </tr>
+    <tr>
+        <td align="center"><b>浔兴股份(002098)</b></td>
+        <td align="center">12.90</td>
+        <td align="center">13.16</td>
+        <td align="center">2.02%</td>
+    </tr>
+    <tr>
+        <td align="center" rowspan="3">Aphonese.qp</td>
+        <td align="center"><b>南京熊猫(600775)</b></td>
+        <td align="center">14.76</td>
+        <td align="center">15.30</td>
+        <td align="center">3.66%</td>
+        <td align="center" rowspan="3">10.76%</td>
+    </tr>
+    <tr>
+        <td align="center"><b>友利控股(000584)</b></td>
+        <td align="center">12.43</td>
+        <td align="center">12.70</td>
+        <td align="center">2.17%</td>
+    </tr>
+    <tr>
+        <td align="center"><b>黑牛食品(002387)</b></td>
+        <td align="center">17.64</td>
+        <td align="center">18.51</td>
+        <td align="center">4.93%</td>
+    </tr>
+</table><table>
+<tr>
+    <th>日期</th>
+    <th>参与者</th>
+    <th>预测股票</th>
+    <th>次日最低点</th>
+    <th>第三日开盘平均值</th>
+    <th>得分</th>
+    <th>累计得分</th>
+</tr>
+<tr>
+    <td align="center" rowspan="9">2016-05-09</td>
+    <td align="center" rowspan="3">Roger</td>
+    <td align="center"><b>智度投资(000676)</b></td>
+    <td align="center">22.45</td>
+    <td align="center">22.62</td>
+    <td align="center">0.76%</td>
+    <td align="center" rowspan="3">34.62%</td>
+</tr>
+<tr>
+    <td align="center"><b>安妮股份(002235)</b></td>
+    <td align="center">20.27</td>
+    <td align="center">20.67</td>
+    <td align="center">1.97%</td>
+</tr>
+<tr>
+    <td align="center"><b>如意集团(000626)</b></td>
+    <td align="center">55.93</td>
+    <td align="center">67.67</td>
+    <td align="center">20.99%</td>
+</tr>
+<tr>
+    <td align="center" rowspan="3">Aphonese.qp</td>
+    <td align="center"><b>东方网络(002175)</b></td>
+    <td align="center">47.98</td>
+    <td align="center">46.76</td>
+    <td align="center">-2.54%</td>
+    <td align="center" rowspan="3">7.75%</td>
+</tr>
+<tr>
+    <td align="center"><b>钱江生化(600796)</b></td>
+    <td align="center">11.84</td>
+    <td align="center">12.00</td>
+    <td align="center">1.35%</td>
+</tr>
+<tr>
+    <td align="center"><b>天津普林(002134)</b></td>
+    <td align="center">16.48</td>
+    <td align="center">16.18</td>
+    <td align="center">-1.82%</td>
+</tr>
+</table><table>
+<tr>
+    <th>日期</th>
+    <th>参与者</th>
+    <th>预测股票</th>
+    <th>次日最低点</th>
+    <th>第三日开盘平均值</th>
+    <th>得分</th>
+    <th>累计得分</th>
+</tr>
+<tr>
+    <td align="center" rowspan="9">2016-05-09</td>
+    <td align="center" rowspan="3">Roger</td>
+    <td align="center"><b>明牌珠宝(002574)</b></td>
+    <td align="center">11.73</td>
+    <td align="center">11.87</td>
+    <td align="center">1.19%</td>
+    <td align="center" rowspan="3">36.36%</td>
+</tr>
+<tr>
+    <td align="center"><b>金刚玻璃(300093)</b></td>
+    <td align="center">29.39</td>
+    <td align="center">29.90</td>
+    <td align="center">1.74%</td>
+</tr>
+<tr>
+    <td align="center"><b>久联发展(002037)</b></td>
+    <td align="center">18.58</td>
+    <td align="center">18.36</td>
+    <td align="center">-1.18%</td>
+</tr>
+<tr>
+    <td align="center" rowspan="3">Aphonese.qp</td>
+    <td align="center"><b>东方网络(002175)</b></td>
+    <td align="center">47.67</td>
+    <td align="center">48.50</td>
+    <td align="center">1.74%</td>
+    <td align="center" rowspan="3">12.87%</td>
+</tr>
+<tr>
+    <td align="center"><b>海默科技(300084)</b></td>
+    <td align="center">11.19</td>
+    <td align="center">11.53</td>
+    <td align="center">3.04%</td>
+</tr>
+<tr>
+    <td align="center"><b>千红制药(002550)</b></td>
+    <td align="center">17.50</td>
+    <td align="center">17.56</td>
+    <td align="center">0.34%</td>
+</tr>
+</table>
+<table>
+<tr>
+    <th>日期</th>
+    <th>参与者</th>
+    <th>预测股票</th>
+    <th>次日最低点</th>
+    <th>第三日开盘平均值</th>
+    <th>得分</th>
+    <th>累计得分</th>
+</tr>
+<tr>
+    <td align="center" rowspan="9">2016-05-10</td>
+    <td align="center" rowspan="3">Roger</td>
+    <td align="center"><b>金刚玻璃(300093)</b></td>
+    <td align="center">29.65</td>
+    <td align="center"></td>
+    <td align="center"></td>
+    <td align="center" rowspan="3"></td>
+</tr>
+<tr>
+    <td align="center"><b>智度投资(000676)</b></td>
+    <td align="center">22.68</td>
+    <td align="center"></td>
+    <td align="center"></td>
+</tr>
+<tr>
+    <td align="center"><b>仙琚制药(002332)</b></td>
+    <td align="center">11.15</td>
+    <td align="center"></td>
+    <td align="center"></td>
+</tr>
+<tr>
+    <td align="center" rowspan="3">Aphonese.qp</td>
+    <td align="center"><b>旋极信息(300324)</b></td>
+    <td align="center">23.33</td>
+    <td align="center"></td>
+    <td align="center"></td>
+    <td align="center" rowspan="3"></td>
+</tr>
+<tr>
+    <td align="center"><b>硕贝德(300322)</b></td>
+    <td align="center">17.94</td>
+    <td align="center"></td>
+    <td align="center"></td>
+</tr>
+<tr>
+    <td align="center"><b>和晶科技(300279)</b></td>
+    <td align="center">41.48</td>
+    <td align="center"></td>
+    <td align="center"></td>
+</tr>
+</table>

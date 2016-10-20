@@ -16,6 +16,8 @@ import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.CollectionUtils;
 
+import com.google.common.collect.Lists;
+
 import stock.common.dal.datainterface.DailyTradeDAO;
 import stock.common.dal.dataobject.DailyTradeData;
 import stock.common.sal.sina.SinaStockClient;
@@ -25,8 +27,6 @@ import stock.common.util.DecimalUtil;
 import stock.common.util.PathUtil;
 import stock.core.model.models.BollValueGroup;
 import stock.core.model.models.BollValueTuple;
-
-import com.google.common.collect.Lists;
 
 /**
  * @author yuanren.syr
@@ -90,12 +90,12 @@ public class BollEvaluateProcessor {
                     }
                     if (isFirstOpen(bollValueTuples)) {
                         BollValueTuple lastestValueTuple = bollValueTuples.get(0);
-                        double openRate = (prevDtd.getOpeningPrice() - lastestValueTuple
+                        double openRate = (prevDtd.getOpeningPrice(null) - lastestValueTuple
                             .getAvgPrice()) / lastestValueTuple.getAvgPrice();
-                        double highestToHighest = (prevDtd.getClosingPrice() - lastestValueTuple
+                        double highestToHighest = (prevDtd.getClosingPrice(null) - lastestValueTuple
                             .getUpPrice()) / lastestValueTuple.getUpPrice();
                         if (openRate < 0.06 && openRate > -0.02
-                            && prevDtd.getClosingPrice() > prevDtd.getOpeningPrice()) {
+                            && prevDtd.getClosingPrice(null) > prevDtd.getOpeningPrice(null)) {
                             if (isEvalute) {
                                 double standardRate = bollValueTuples.get(1)
                                     .getStandardDeviationRate();
@@ -103,8 +103,8 @@ public class BollEvaluateProcessor {
                                     .getStandardDeviationRate() - standardRate);
                                 double bollFallingRate = (bollValueTuples.get(2)
                                     .getStandardDeviationRate() - standardRate);
-                                double raisingRate = (curDtd.getClosingPrice() - prevDtd
-                                    .getClosingPrice()) / prevDtd.getClosingPrice();
+                                double raisingRate = (curDtd.getClosingPrice(null) - prevDtd
+                                    .getClosingPrice(null)) / prevDtd.getClosingPrice(null);
                                 if (bollRaisingRate > 0.01) {
                                     String output = stockCode + "," + processDate + ","
                                                     + DecimalUtil.formatPercent(bollRaisingRate)
@@ -130,13 +130,13 @@ public class BollEvaluateProcessor {
         int N = end - start;
         double avg = 0;
         for (int i = start; i < end; ++i) {
-            sum += dtds.get(i).getClosingPrice();
+            sum += dtds.get(i).getClosingPrice(null);
         }
         avg = sum / N;
 
         sum = 0;
         for (int i = start; i < end; ++i) {
-            double diff = dtds.get(i).getClosingPrice() - avg;
+            double diff = dtds.get(i).getClosingPrice(null) - avg;
             sum += diff * diff;
         }
         bollValueTuple.setAvgPrice(avg);
