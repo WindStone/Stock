@@ -1,6 +1,6 @@
 package stock.common.dal.ibatis;
 
-import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+import org.mybatis.spring.support.SqlSessionDaoSupport;
 import stock.common.dal.datainterface.ReportDAO;
 import stock.common.dal.dataobject.Report;
 
@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * Created by songyuanren on 2016/10/17.
  */
-public class IbatisReportDAO extends SqlMapClientDaoSupport implements ReportDAO {
+public class IbatisReportDAO extends SqlSessionDaoSupport implements ReportDAO {
 
     public void insert(Report report) {
-        getSqlMapClientTemplate().insert("MS-REPORT-INSERT", report);
+        getSqlSession().insert("MS-REPORT-INSERT", report);
     }
 
     public void updateById(Report report) {
-        getSqlMapClientTemplate().update("MS-REPORT-UPDATE-BY-ID", report);
+        getSqlSession().update("MS-REPORT-UPDATE-BY-ID", report);
     }
 
     public Report findByUsernameAndDate(String username, String date) {
@@ -27,7 +27,7 @@ public class IbatisReportDAO extends SqlMapClientDaoSupport implements ReportDAO
         map.put("username", username);
         map.put("date", date);
 
-        return (Report) getSqlMapClientTemplate().queryForObject("MS-REPORT-QUERY-BY-USERNAME-AND-DATE", map);
+        return (Report) getSqlSession().selectOne("MS-REPORT-QUERY-BY-USERNAME-AND-DATE", map);
     }
 
     public List<Report> findAll(Integer limitStart, Integer limitEnd) {
@@ -36,7 +36,7 @@ public class IbatisReportDAO extends SqlMapClientDaoSupport implements ReportDAO
         map.put("limitStart", limitStart);
         map.put("limitEnd", limitEnd);
 
-        return (List) getSqlMapClientTemplate().queryForList("MS-REPORT-QUERY-ALL", map);
+        return (List) getSqlSession().selectList("MS-REPORT-QUERY-ALL", map);
     }
 
 }

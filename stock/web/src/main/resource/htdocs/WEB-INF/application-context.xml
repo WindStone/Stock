@@ -105,26 +105,14 @@
         <property name="password" value="Dream612009"/>
     </bean>
 
-    <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
-        <property name="configLocation">  <!-- name 为configLocation或s  不可为其他 -->
-            <value>sqlmap/sqlmap.xml</value>
-            <!-- 不区分大小写，路径前可加'/' -->
-        </property>
-
-        <!-- dataSource不是必需 -->
-        <property name="dataSource">
-            <ref local="dataSource"/>
-        </property>
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath*:sqlmap/*.xml"/>
     </bean>
 
     <bean id="baseSqlMapClientDAO" abstract="true">
-        <property name="dataSource">
-            <ref local="dataSource"/>
-        </property>
-
-        <!-- sqlMapClient必需 -->
-        <property name="sqlMapClient">
-            <ref local="sqlMapClient"/>
+        <property name="sqlSessionFactory">
+            <ref local="sqlSessionFactory"/>
         </property>
     </bean>
 

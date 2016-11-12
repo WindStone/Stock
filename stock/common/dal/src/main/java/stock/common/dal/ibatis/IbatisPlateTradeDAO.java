@@ -4,24 +4,24 @@
  */
 package stock.common.dal.ibatis;
 
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import stock.common.dal.datainterface.PlateTradeDAO;
+import stock.common.dal.dataobject.DailyPlateData;
+import stock.common.util.DateUtil;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
-
-import stock.common.dal.datainterface.PlateTradeDAO;
-import stock.common.dal.dataobject.DailyPlateData;
-import stock.common.util.DateUtil;
-
 /**
  * @author yuanren.syr
  * @version $Id: IbatisPlateTradeDAO.java, v 0.1 2016/2/2 0:17 yuanren.syr Exp $
  */
-public class IbatisPlateTradeDAO extends SqlMapClientDaoSupport implements PlateTradeDAO {
+public class IbatisPlateTradeDAO extends SqlSessionDaoSupport implements PlateTradeDAO {
+
     public boolean insert(DailyPlateData dailyPlateData) {
-        return getSqlMapClientTemplate().insert("MS-DAILY-PLATE-DATA-INSERT", dailyPlateData) != null;
+        return getSqlSession().insert("MS-DAILY-PLATE-DATA-INSERT", dailyPlateData) > 0;
     }
 
     public DailyPlateData queryByNameAndDate(String plateName, String processName, Date calcDate) {
@@ -29,8 +29,8 @@ public class IbatisPlateTradeDAO extends SqlMapClientDaoSupport implements Plate
         map.put("plateName", plateName);
         map.put("processName", processName);
         map.put("tradingDate", DateUtil.simpleFormat(calcDate));
-        return (DailyPlateData) getSqlMapClientTemplate().queryForObject(
-            "MS-DAILY-PLATE-DATA-QUERY-BY-NAME-AND-DATE", map);
+        return (DailyPlateData) getSqlSession().selectOne(
+                "MS-DAILY-PLATE-DATA-QUERY-BY-NAME-AND-DATE", map);
     }
 
     public List<DailyPlateData> queryIntervalByNameAndDate(String plateName, String processName,
@@ -40,11 +40,11 @@ public class IbatisPlateTradeDAO extends SqlMapClientDaoSupport implements Plate
         map.put("processName", processName);
         map.put("startDate", DateUtil.simpleFormat(startDate));
         map.put("endDate", DateUtil.simpleFormat(endDate));
-        return getSqlMapClientTemplate().queryForList(
-            "MS-DAILY-PLATE-DATA-QUERY-INTERVAL-BY-NAME-AND-DATE", map);
+        return getSqlSession().selectList(
+                "MS-DAILY-PLATE-DATA-QUERY-INTERVAL-BY-NAME-AND-DATE", map);
     }
 
     public int update(DailyPlateData dailyPlateData) {
-        return getSqlMapClientTemplate().update("MS-DAILY-PLATE-DATA-UPDATE", dailyPlateData);
+        return getSqlSession().update("MS-DAILY-PLATE-DATA-UPDATE", dailyPlateData);
     }
 }

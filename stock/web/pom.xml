@@ -29,20 +29,15 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.context</artifactId>
+            <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.context.support</artifactId>
+            <artifactId>spring-context-support</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web.servlet</artifactId>
+            <artifactId>spring-web</artifactId>
         </dependency>
 
         <dependency>
@@ -82,7 +77,7 @@
         <!-- dom4j -->
         <dependency>
             <groupId>org.dom4j</groupId>
-            <artifactId>org.dom4j</artifactId>
+            <artifactId>dom4j</artifactId>
         </dependency>
 
     </dependencies>

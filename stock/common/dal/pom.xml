@@ -26,23 +26,19 @@
         <!-- spring start -->
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.jdbc</artifactId>
+            <artifactId>spring-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.orm</artifactId>
+            <artifactId>spring-orm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.transaction</artifactId>
+            <artifactId>spring-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.beans</artifactId>
+            <artifactId>spring-beans</artifactId>
         </dependency>
         <!-- spring end -->
 

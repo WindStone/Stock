@@ -4,20 +4,19 @@
  */
 package stock.common.dal.ibatis;
 
-import java.util.*;
-
-import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
-
+import org.mybatis.spring.support.SqlSessionDaoSupport;
 import stock.common.dal.datainterface.TradeDetailRecordDAO;
 import stock.common.dal.dataobject.TradeDetailRecord;
 import stock.common.util.DateUtil;
+
+import java.util.*;
 
 /**
  * @author yuanren.syr
  * @version $Id: IbatisTradeDetailRecordDAO.java, v 0.1 2016/2/22 0:09 yuanren.syr Exp $
  */
-public class IbatisTradeDetailRecordDAO extends SqlMapClientDaoSupport implements
-                                                                      TradeDetailRecordDAO {
+public class IbatisTradeDetailRecordDAO extends SqlSessionDaoSupport implements
+        TradeDetailRecordDAO {
 
     public List<TradeDetailRecord> queryTradeDetailRecordByInterval(Date startDate, Date endDate) {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -38,12 +37,12 @@ public class IbatisTradeDetailRecordDAO extends SqlMapClientDaoSupport implement
             endDate = calendar.getTime();
             map.put("endDate", DateUtil.dateFormat(endDate));
         }
-        return getSqlMapClientTemplate().queryForList("MS-TRADE-DETAIL-RECORD-QUERY-BY-INTERVAL",
-            map);
+        return getSqlSession().selectList("MS-TRADE-DETAIL-RECORD-QUERY-BY-INTERVAL",
+                map);
     }
 
     public List<TradeDetailRecord> queryTradeDetailRecordByTradeId(String tradeRecordId) {
-        return getSqlMapClientTemplate().queryForList("MS-TRADE-DETAIL-RECORD-QUERY-BY-TRADE-ID",
-            tradeRecordId);
+        return getSqlSession().selectList("MS-TRADE-DETAIL-RECORD-QUERY-BY-TRADE-ID",
+                tradeRecordId);
     }
 }

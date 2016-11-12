@@ -15,11 +15,11 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.context</artifactId>
+            <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.context.support</artifactId>
+            <artifactId>spring-context-support</artifactId>
         </dependency>
 
         <dependency>
@@ -43,8 +43,7 @@
 
         <dependency>
             <groupId>org.dom4j</groupId>
-            <artifactId>org.dom4j</artifactId>
-            <version>1.6.1</version>
+            <artifactId>dom4j</artifactId>
         </dependency>
     </dependencies>
 
